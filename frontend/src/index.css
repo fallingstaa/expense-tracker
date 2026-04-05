@@ -5,3 +5,7 @@
   --color-mutes-foreground: #8b96a5;
   --color-primary: #615fff;
 }
+
+::-webkit-scrollbar {
+  display: none;
+}

@@ -3,7 +3,7 @@ import ForgotPasswordForm from "../../components/auth/forgotPasswordForm";
 
 const ForgotPasswordPage = () => {
   return (
-    <div className="pt-8">
+    <div className="pt-2">
       <ForgotPasswordForm />
     </div>
   );

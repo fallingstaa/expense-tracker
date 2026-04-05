@@ -45,25 +45,6 @@ const Filter = () => {
               style={{ maxHeight: isOpen ? "1000px" : "0px" }}
             >
               <div className="mt-6 space-y-6">
-                {/* <div>
-                  <p className="text-xs font-semibold tracking-widest text-mutes/60 uppercase mb-3">
-                    Transaction Type
-                  </p>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                    {["All", "Income", "Expense"].map((type) => (
-                      <button
-                        key={type}
-                        className={`py-3 rounded-lg border text-sm font-medium transition-colors ${
-                          type === "All"
-                            ? "bg-mutes/20 border-mutes text-mutes"
-                            : "bg-transparent border-mutes/20 text-mutes/50 hover:border-mutes/40"
-                        }`}
-                      >
-                        {type}
-                      </button>
-                    ))}
-                  </div>
-                </div> */}
                 <div>
                   <p className="text-xs font-semibold tracking-widest text-mutes/60 uppercase mb-3">
                     Transaction Type

@@ -1,16 +1,12 @@
 import { Link } from "react-router-dom";
 import { ArrowLeft, Mail } from "lucide-react";
-
+import bg1 from "../../../public/expense.png";
 export default function ForgotPasswordForm() {
   return (
     <div className="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-sm">
-        <img
-          alt="Your Company"
-          src="https://tailwindcss.com/plus-assets/img/logos/mark.svg?color=indigo&shade=500"
-          className="mx-auto h-10 w-auto"
-        />
-        <h2 className="mt-10 text-center text-2xl/9 font-bold tracking-tight text-mutes">
+        <img alt="Your Company" src={bg1} className="mx-auto h-30 w-30" />
+        <h2 className="mt-0 text-center text-2xl/9 font-bold tracking-tight text-mutes">
           MyTrancy
         </h2>
         <p className="text-center text-sm tracking-tight text-mutes-foreground">
