@@ -13,7 +13,7 @@ export default function Header() {
   return (
     <Disclosure
       as="nav"
-      className="relative bg-gray-800/50 after:pointer-events-none after:absolute after:inset-x-0 after:bottom-0 after:h-px after:bg-white/10"
+      className="fixed top-0 left-0 right-0  bg-gray-800/50 after:pointer-events-none after:absolute after:inset-x-0 after:bottom-0 after:h-px after:bg-white/10"
     >
       <div className="mx-auto max-w-8xl px-2 sm:px-6 lg:px-8">
         <div className="relative flex h-16 items-center justify-between">
@@ -47,14 +47,14 @@ export default function Header() {
             <button
               type="button"
               onClick={() => console.log("Download CSV")}
-              className="rounded-md bg-white/5 px-3 py-1.5 text-sm font-medium text-gray-300 hover:bg-white/10 hover:text-white"
+              className="rounded-md bg-mutes/20 px-3 py-1.5 text-sm font-medium text-gray-300 hover:bg-white/10 hover:text-white"
             >
               CSV
             </button>
             <button
               type="button"
               onClick={() => console.log("Download JSON")}
-              className="rounded-md bg-white/5 px-3 py-1.5 text-sm font-medium text-gray-300 hover:bg-white/10 hover:text-white"
+              className="rounded-md bg-mutes/20 px-3 py-1.5 text-sm font-medium text-gray-300 hover:bg-white/10 hover:text-white"
             >
               JSON
             </button>
@@ -70,7 +70,7 @@ export default function Header() {
       </div>
 
       <DisclosurePanel className="sm:hidden">
-        <div className="space-y-1 px-2 pt-2 pb-3">
+        <div className="space-y-1 px-2 pt-2 pb-3 bg-gray-800">
           <div className="flex flex-col gap-2 pt-2">
             <button className="rounded-md bg-white/5 px-3 py-2 text-sm font-medium text-gray-300 hover:bg-white/10 hover:text-white">
               Download CSV
