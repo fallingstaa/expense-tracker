@@ -7,12 +7,11 @@ import Transaction from "../../components/dashboard/transection/transaction";
 
 const DashboardPage = () => {
   return (
-    <div className="pt-0">
+    <div className="pt-0 pb-10">
       <Header />
       <States />
       <Analytic />
       <Filter />
-
       <Transaction />
     </div>
   );

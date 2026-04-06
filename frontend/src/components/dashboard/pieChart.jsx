@@ -5,7 +5,7 @@ import { pieData, COLORS } from "../../data/data";
 export function PieChartComponent() {
   return (
     <section>
-      <div className="bg-gray-800 border border-mutes/20 rounded-lg p-5">
+      <div className="bg-gray-800/50 border border-mutes/20 rounded-lg p-5">
         <div className="mb-4">
           <h2 className="text-mutes font-semibold text-lg">Pie Chart</h2>
           <p className="text-mutes/50 text-sm">January - June 2024</p>

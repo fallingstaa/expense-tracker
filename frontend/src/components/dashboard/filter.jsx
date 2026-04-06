@@ -16,7 +16,7 @@ const Filter = () => {
     <section>
       <div className="ml-5 mr-5 ">
         <div className="max-w-8xl mx-auto">
-          <div className="p-5 bg-gray-800 border border-mutes/20 rounded-lg">
+          <div className="p-5 bg-gray-800/50 border border-mutes/20 rounded-lg">
             <div className="flex justify-between">
               <div className="flex items-center gap-3">
                 <div className="bg-mutes/20 p-2 border rounded-md border-mutes/20">
