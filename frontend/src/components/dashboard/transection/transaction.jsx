@@ -22,7 +22,7 @@ const Transaction = () => {
 
   return (
     <section className="pb-5">
-      <div className="mt-5 mx-3 sm:mx-5 ">
+      <div className="mt-5 mb-5 mr-5 ml-5">
         <div className="max-w-8xl mx-auto">
           <div className="p-5 bg-gray-800 border border-mutes/20 rounded-lg">
             <div className="flex justify-between items-center mb-5">

@@ -17,14 +17,13 @@ export const TransactionDialog = ({
 
   return (
     <div
-      className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 flex items-center justify-center p-3 sm:p-6"
+      className="fixed inset-0 bg-black/60 backdrop-blur-sm z-9999 flex items-center justify-center p-3 sm:p-6"
       onClick={onClose}
     >
       <div
-        className="bg-gray-900 border border-mutes/20 rounded-2xl w-full max-w-2xl z-50 shadow-2xl max-h-[90vh] overflow-y-auto"
+        className="bg-gray-900 border border-mutes/20 rounded-2xl w-full max-w-2xl z-10000 shadow-2xl max-h-[90vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Header */}
         <div className="flex justify-between items-center p-4 sm:p-6 border-b border-mutes/10">
           <h2 className="text-xl sm:text-2xl font-bold text-mutes">
             {editId ? "Edit Transaction" : "Add Transaction"}
@@ -38,7 +37,6 @@ export const TransactionDialog = ({
         </div>
 
         <div className="p-4 sm:p-6 space-y-5">
-          {/* Type */}
           <div className="grid grid-cols-2 gap-3">
             {["expense", "income"].map((t) => (
               <button
@@ -57,7 +55,6 @@ export const TransactionDialog = ({
             ))}
           </div>
 
-          {/* Title */}
           <div>
             <label className="text-sm text-mutes mb-2 block">Title</label>
             <input
@@ -69,7 +66,6 @@ export const TransactionDialog = ({
             />
           </div>
 
-          {/* Amount + Category */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="text-sm text-mutes mb-2 block">Amount</label>
@@ -99,7 +95,6 @@ export const TransactionDialog = ({
             </div>
           </div>
 
-          {/* Tags */}
           <div>
             <label className="text-sm text-mutes mb-2 flex items-center gap-2">
               <Tag className="w-4 h-4" />
@@ -114,7 +109,6 @@ export const TransactionDialog = ({
             />
           </div>
 
-          {/* Notes */}
           <div>
             <label className="text-sm text-mutes mb-2 flex items-center gap-2">
               <FileText className="w-4 h-4" />
@@ -129,7 +123,6 @@ export const TransactionDialog = ({
             />
           </div>
 
-          {/* Recurring */}
           <div className="flex items-center justify-between bg-gray-800 border border-mutes/20 rounded-xl px-4 py-4">
             <div className="flex items-center gap-3">
               <RefreshCw className="w-5 h-5 text-mutes" />
@@ -151,7 +144,6 @@ export const TransactionDialog = ({
           </div>
         </div>
 
-        {/* Footer */}
         <div className="grid grid-cols-2 gap-3 p-4 sm:p-6 pt-0">
           <button
             onClick={onClose}

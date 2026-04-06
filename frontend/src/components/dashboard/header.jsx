@@ -13,7 +13,7 @@ export default function Header() {
   return (
     <Disclosure
       as="nav"
-      className="fixed top-0 left-0 right-0  bg-gray-800/50 after:pointer-events-none after:absolute after:inset-x-0
+      className="fixed top-0 left-0 right-0 z-50 bg-gray-800 after:pointer-events-none after:absolute after:inset-x-0
        after:bottom-0 after:h-px after:bg-white/10"
     >
       <div className="mx-auto max-w-8xl px-2 sm:px-6 lg:px-8">
