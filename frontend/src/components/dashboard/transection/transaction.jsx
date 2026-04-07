@@ -31,7 +31,7 @@ const Transaction = () => {
               </h1>
               <button
                 onClick={openAdd}
-                className="py-2 px-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-colors text-sm font-medium"
+                className="py-2 px-4 cursor-pointer bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-colors text-sm font-medium"
               >
                 Add Transaction
               </button>

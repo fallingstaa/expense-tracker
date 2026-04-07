@@ -47,21 +47,21 @@ export default function Header() {
             <button
               type="button"
               onClick={() => console.log("Download CSV")}
-              className="rounded-md bg-mutes/20 px-3 py-1.5 text-sm font-medium text-gray-300 hover:bg-white/10 hover:text-white"
+              className="rounded-md cursor-pointer bg-mutes/20 px-3 py-1.5 text-sm font-medium text-gray-300 hover:bg-white/10 hover:text-white"
             >
               CSV
             </button>
             <button
               type="button"
               onClick={() => console.log("Download JSON")}
-              className="rounded-md bg-mutes/20 px-3 py-1.5 text-sm font-medium text-gray-300 hover:bg-white/10 hover:text-white"
+              className="rounded-md cursor-pointer bg-mutes/20 px-3 py-1.5 text-sm font-medium text-gray-300 hover:bg-white/10 hover:text-white"
             >
               JSON
             </button>
             <button
               type="button"
               onClick={() => console.log("Log out")}
-              className="rounded-md bg-indigo-500 px-3 py-1.5 text-sm font-medium text-white hover:bg-indigo-400"
+              className="rounded-md cursor-pointer bg-indigo-500 px-3 py-1.5 text-sm font-medium text-white hover:bg-indigo-400"
             >
               Log out
             </button>
@@ -72,13 +72,13 @@ export default function Header() {
       <DisclosurePanel className="sm:hidden">
         <div className="space-y-1 px-2 pt-2 pb-3 bg-gray-800">
           <div className="flex flex-col gap-2 pt-2">
-            <button className="rounded-md bg-white/5 px-3 py-2 text-sm font-medium text-gray-300 hover:bg-white/10 hover:text-white">
+            <button className="rounded-md cursor-pointer bg-white/5 px-3 py-2 text-sm font-medium text-gray-300 hover:bg-white/10 hover:text-white">
               Download CSV
             </button>
-            <button className="rounded-md bg-white/5 px-3 py-2 text-sm font-medium text-gray-300 hover:bg-white/10 hover:text-white">
+            <button className="rounded-md cursor-pointer bg-white/5 px-3 py-2 text-sm font-medium text-gray-300 hover:bg-white/10 hover:text-white">
               Download JSON
             </button>
-            <button className="rounded-md bg-indigo-500 px-3 py-2 text-sm font-medium text-white hover:bg-indigo-400">
+            <button className="rounded-md cursor-pointer bg-indigo-500 px-3 py-2 text-sm font-medium text-white hover:bg-indigo-400">
               Log out
             </button>
           </div>

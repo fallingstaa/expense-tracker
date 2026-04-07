@@ -21,7 +21,7 @@ export const TransactionDialog = ({
       onClick={onClose}
     >
       <div
-        className="bg-gray-900 border border-mutes/20 rounded-2xl w-full max-w-2xl z-10000 shadow-2xl max-h-[90vh] overflow-y-auto"
+        className="dialog-scale bg-gray-900 border border-mutes/20 rounded-2xl w-full max-w-2xl z-10000 shadow-2xl max-h-[90vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex justify-between items-center p-4 sm:p-6 border-b border-mutes/10">
@@ -30,7 +30,7 @@ export const TransactionDialog = ({
           </h2>
           <button
             onClick={onClose}
-            className="text-mutes/50 hover:text-mutes transition-colors"
+            className="text-mutes/50 cursor-pointer hover:text-mutes transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
@@ -147,18 +147,34 @@ export const TransactionDialog = ({
         <div className="grid grid-cols-2 gap-3 p-4 sm:p-6 pt-0">
           <button
             onClick={onClose}
-            className="py-3 rounded-xl bg-gray-800 border border-mutes/20 text-mutes/70 hover:bg-gray-700 transition-colors text-sm font-medium"
+            className="py-3 cursor-pointer rounded-xl bg-gray-800 border border-mutes/20 text-mutes/70 hover:bg-gray-700 transition-colors text-sm font-medium"
           >
             Cancel
           </button>
           <button
             onClick={onSave}
-            className="py-3 rounded-xl bg-indigo-500 text-white font-semibold text-sm hover:opacity-90 transition-opacity"
+            className="py-3 rounded-xl cursor-pointer bg-indigo-500 text-white font-semibold text-sm hover:opacity-90 transition-opacity"
           >
             {editId ? "Save Changes" : "Add Transaction"}
           </button>
         </div>
       </div>
+
+      <style>{`
+        @keyframes dialogScale {
+          from {
+            opacity: 0;
+            transform: scale(0.92);
+          }
+          to {
+            opacity: 1;
+            transform: scale(1);
+          }
+        }
+        .dialog-scale {
+          animation: dialogScale 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        }
+      `}</style>
     </div>
   );
 };

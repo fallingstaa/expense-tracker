@@ -48,18 +48,17 @@ export const useTransaction = () => {
     setTransactions(transactions.filter((t) => t.id !== id));
 
   return {
-    // state
     isOpen,
     type,
     recurring,
     transactions,
     form,
     editId,
-    // setters
+
     setForm,
     setType,
     setRecurring,
-    // handlers
+
     openAdd,
     openEdit,
     handleSave,
