@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { emptyForm } from "../components/dashboard/transection/transactionUtils";
+import { emptyForm } from "../components/dashboard/transaction/transactionUtils";
 
 export const useTransaction = () => {
   const [isOpen, setIsOpen] = useState(false);

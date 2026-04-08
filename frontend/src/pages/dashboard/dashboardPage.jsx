@@ -3,7 +3,7 @@ import Filter from "../../components/dashboard/filter";
 
 import Header from "../../components/dashboard/header";
 import States from "../../components/dashboard/states";
-import Transaction from "../../components/dashboard/transection/transaction";
+import Transaction from "../../components/dashboard/transaction/transaction";
 
 const DashboardPage = () => {
   return (

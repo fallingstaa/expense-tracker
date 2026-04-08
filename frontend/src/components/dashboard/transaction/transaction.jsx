@@ -1,6 +1,6 @@
-import { useTransaction } from "../../../hook/useTransaction";
-import { TransactionCard } from "./TransactionCard";
-import { TransactionDialog } from "./TransactionDialog";
+import { useTransaction } from "../../../hooks/useTransaction";
+import { TransactionCard } from "./transactionCard";
+import { TransactionDialog } from "./transactionDialog";
 
 const Transaction = () => {
   const {

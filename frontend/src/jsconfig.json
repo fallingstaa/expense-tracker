@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "ignoreDeprecations": "6.0",
+    "target": "ES6",
+    "module": "ESNext",
+    "jsx": "react-jsx",
+    "moduleResolution": "bundler",
+    "baseUrl": "./"
+  },
+  "include": [
+    "redux",
+    "feature",
+    "**/*.js",
+    "**/*.jsx",
+    "node_modules/@reduxjs/toolkit"
+  ]
+}
