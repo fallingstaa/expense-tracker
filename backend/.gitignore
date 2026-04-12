@@ -1,0 +1,12 @@
+# Secrets and environment variables
+.env
+.env.*
+!.env.example
+
+# Node/Next build artifacts
+node_modules/
+.next/
+out/
+
+# Logs
+*.log

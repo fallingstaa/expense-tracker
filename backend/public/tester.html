@@ -1,0 +1,1287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MyTrancy API Tester</title>
+  <style>
+    :root {
+      --bg: #f4f1ea;
+      --card: #fffdf8;
+      --ink: #1f2a36;
+      --muted: #5a6775;
+      --accent: #0f766e;
+      --accent-2: #ca8a04;
+      --danger: #b91c1c;
+      --ok: #166534;
+      --shadow: 0 20px 40px rgba(18, 38, 63, 0.1);
+      --radius: 18px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: "Space Grotesk", "Segoe UI", sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 10% 20%, #fef3c7 0%, transparent 45%),
+        radial-gradient(circle at 90% 10%, #d1fae5 0%, transparent 35%),
+        linear-gradient(160deg, #f4f1ea 0%, #e7eef7 100%);
+      min-height: 100vh;
+      padding: 28px;
+    }
+
+    .wrap {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: grid;
+      gap: 16px;
+    }
+
+    .hero {
+      background: linear-gradient(130deg, #0f766e, #155e75);
+      color: #f8fafc;
+      border-radius: var(--radius);
+      padding: 22px;
+      box-shadow: var(--shadow);
+      animation: fadeSlide .45s ease-out;
+    }
+
+    .hero h1 {
+      margin: 0 0 8px;
+      font-size: clamp(1.4rem, 2.4vw, 2.2rem);
+      letter-spacing: 0.3px;
+    }
+
+    .hero p { margin: 0; opacity: .95; }
+
+    .grid {
+      display: grid;
+      gap: 16px;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    }
+
+    .card {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 18px;
+      box-shadow: var(--shadow);
+      animation: fadeSlide .5s ease-out;
+      border: 1px solid rgba(15, 118, 110, .08);
+    }
+
+    .full-span {
+      grid-column: 1 / -1;
+    }
+
+    h2 {
+      margin: 0 0 12px;
+      font-size: 1.08rem;
+      color: #0f172a;
+    }
+
+    .sub {
+      margin: -6px 0 14px;
+      color: var(--muted);
+      font-size: .92rem;
+    }
+
+    label {
+      font-size: .9rem;
+      font-weight: 600;
+      display: block;
+      margin: 10px 0 6px;
+    }
+
+    input, textarea {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid #cbd5e1;
+      border-radius: 10px;
+      background: #fff;
+      color: var(--ink);
+      font: inherit;
+    }
+
+    textarea { min-height: 100px; resize: vertical; }
+
+    .row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+
+    .field-col {
+      flex: 1;
+      min-width: 180px;
+    }
+
+    button {
+      border: 0;
+      border-radius: 999px;
+      padding: 10px 14px;
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+      color: #fff;
+      background: var(--accent);
+      transition: transform .15s ease, opacity .2s ease;
+    }
+
+    button.secondary { background: #334155; }
+    button.warn { background: var(--accent-2); color: #1f2937; }
+
+    button:hover { transform: translateY(-1px); }
+    button:active { transform: translateY(0); }
+
+    .status {
+      margin-top: 12px;
+      padding: 10px;
+      border-radius: 10px;
+      font-size: .9rem;
+      background: #e2e8f0;
+      color: #0f172a;
+      min-height: 40px;
+    }
+
+    .status.ok { background: #dcfce7; color: var(--ok); }
+    .status.err { background: #fee2e2; color: var(--danger); }
+
+    .hint {
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: .85rem;
+      line-height: 1.4;
+    }
+
+    .feature-list {
+      display: grid;
+      gap: 8px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .feature-list li {
+      border: 1px dashed #cbd5e1;
+      border-radius: 10px;
+      padding: 10px;
+      background: #fff;
+      color: #334155;
+      font-size: .92rem;
+    }
+
+    pre {
+      margin: 0;
+      padding: 12px;
+      border-radius: 12px;
+      background: #0f172a;
+      color: #e2e8f0;
+      overflow: auto;
+      min-height: 120px;
+      font-size: .85rem;
+    }
+
+    .section-divider {
+      margin: 16px 0;
+      border: none;
+      border-top: 1px solid #cbd5e1;
+    }
+
+    .mini-title {
+      font-size: 1rem;
+      margin-top: 0;
+    }
+
+    @keyframes fadeSlide {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <section class="hero">
+      <h1>MyTrancy Backend Test Console</h1>
+      <p>One-page UI for testing auth first. Later you can add transactions, filters, summaries, budgets, recurring, and export actions here.</p>
+    </section>
+
+    <section class="grid">
+      <article class="card">
+        <h2>Auth Test</h2>
+        <p class="sub">Simple auth flow: Signup, Login, Forgot Code, Reset Password, then Login again.</p>
+
+        <label for="name">Name</label>
+        <input id="name" type="text" placeholder="Your name">
+
+        <label for="email">Email</label>
+        <input id="email" type="email" placeholder="you@example.com">
+
+        <label for="password">Password</label>
+        <input id="password" type="password" autocomplete="current-password" placeholder="At least 6 chars">
+
+        <div class="row">
+          <button id="signupBtn" type="button">Signup</button>
+          <button id="loginBtn" class="secondary" type="button">Login</button>
+          <button id="meBtn" class="warn" type="button">Test /me</button>
+        </div>
+
+        <div id="status" class="status">Idle</div>
+      </article>
+
+      <article class="card">
+        <h2>Forgot Password (6-Digit Code)</h2>
+        <p class="sub">Step 1: Request code. Step 2: Reset with code. Verify is optional.</p>
+
+        <label for="forgotEmail">Recovery Email</label>
+        <input id="forgotEmail" type="email" autocomplete="email" placeholder="you@example.com">
+
+        <label for="resetCode">6-Digit Code</label>
+        <input id="resetCode" type="text" inputmode="numeric" maxlength="6" placeholder="123456">
+
+        <div class="row">
+          <button id="forgotCodeBtn" type="button">Request Code</button>
+          <button id="verifyCodeBtn" class="secondary" type="button">Verify Code</button>
+        </div>
+
+        <p class="hint">In development, the code is returned in API response. In production, send this code via your email provider.</p>
+        <div id="forgotStatus" class="status">Ready to request reset code.</div>
+      </article>
+
+      <article class="card">
+        <h2>Reset Password With Code</h2>
+        <p class="sub">Enter email + code + new password. No separate verify required.</p>
+        <p class="hint">Backend reset step requires SUPABASE_SERVICE_ROLE_KEY in backend .env.</p>
+
+        <label for="resetPassword">New Password</label>
+        <input id="resetPassword" type="password" autocomplete="new-password" placeholder="Enter a new password">
+
+        <div class="row">
+          <button id="setPasswordBtn" type="button">Reset Using Code</button>
+        </div>
+
+        <div id="resetStatus" class="status">Ready to reset password with code.</div>
+      </article>
+
+      <article class="card">
+        <h2>Saved Token</h2>
+        <p class="sub">Stored in localStorage for quick testing.</p>
+        <textarea id="token" placeholder="JWT token will appear here"></textarea>
+        <div class="row">
+          <button id="saveTokenBtn" class="secondary" type="button">Save Token</button>
+          <button id="clearTokenBtn" class="warn" type="button">Clear Token</button>
+        </div>
+      </article>
+
+      <article class="card full-span">
+        <h2>Transactions CRUD + Filters (Step 1 + Step 3)</h2>
+        <p class="sub">Test full CRUD and filter/sort using your schema fields.</p>
+
+        <label for="txnTitle">Title</label>
+        <input id="txnTitle" type="text" placeholder="Coffee, Salary, Rent">
+
+        <div class="row">
+          <div class="field-col">
+            <label for="txnAmount">Amount</label>
+            <input id="txnAmount" type="number" step="0.01" placeholder="10.50">
+          </div>
+          <div class="field-col">
+            <label for="txnType">Type</label>
+            <input id="txnType" type="text" placeholder="income or expense">
+          </div>
+          <div class="field-col">
+            <label for="txnCategory">Category</label>
+            <input id="txnCategory" type="text" placeholder="Food, Work, Travel">
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="field-col">
+            <label for="txnTags">Tags (comma separated)</label>
+            <input id="txnTags" type="text" placeholder="urgent, personal">
+          </div>
+          <div class="field-col">
+            <label for="txnNotes">Notes</label>
+            <input id="txnNotes" type="text" placeholder="Optional notes">
+          </div>
+          <div class="field-col">
+            <label for="txnBudgetLimit">Budget Limit</label>
+            <input id="txnBudgetLimit" type="number" step="0.01" placeholder="200">
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="field-col">
+            <label for="txnRecurring">Recurring</label>
+            <input id="txnRecurring" type="text" placeholder="true or false">
+          </div>
+          <div class="field-col">
+            <label for="txnRecurringInterval">Recurring Interval</label>
+            <input id="txnRecurringInterval" type="text" placeholder="monthly, weekly, daily">
+          </div>
+          <div class="field-col">
+            <label for="txnCreatedAt">Created At</label>
+            <input id="txnCreatedAt" type="datetime-local">
+          </div>
+        </div>
+
+        <label for="txnId">Transaction ID (for read/update/delete)</label>
+        <input id="txnId" type="text" placeholder="Paste transaction id from response output">
+
+        <div class="row">
+          <button id="txnCreateBtn" type="button">Create Transaction</button>
+          <button id="txnListBtn" class="secondary" type="button">List Transactions</button>
+          <button id="txnGetBtn" class="secondary" type="button">Get By ID</button>
+          <button id="txnUpdateBtn" class="warn" type="button">Update By ID</button>
+          <button id="txnDeleteBtn" class="warn" type="button">Delete By ID</button>
+        </div>
+
+        <hr class="section-divider">
+
+        <h2 class="mini-title">Filter + Sort</h2>
+        <div class="row">
+          <div class="field-col">
+            <label for="filterType">Type</label>
+            <input id="filterType" type="text" placeholder="income or expense">
+          </div>
+          <div class="field-col">
+            <label for="filterCategory">Category</label>
+            <input id="filterCategory" type="text" placeholder="Food">
+          </div>
+          <div class="field-col">
+            <label for="filterTags">Tags</label>
+            <input id="filterTags" type="text" placeholder="urgent,personal">
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="field-col">
+            <label for="filterStartDate">Start Date</label>
+            <input id="filterStartDate" type="date">
+          </div>
+          <div class="field-col">
+            <label for="filterEndDate">End Date</label>
+            <input id="filterEndDate" type="date">
+          </div>
+          <div class="field-col">
+            <label for="filterSortBy">Sort By</label>
+            <input id="filterSortBy" type="text" placeholder="createdAt, amount, type, category">
+          </div>
+          <div class="field-col">
+            <label for="filterSortOrder">Sort Order</label>
+            <input id="filterSortOrder" type="text" placeholder="asc or desc">
+          </div>
+        </div>
+
+        <div class="row">
+          <button id="txnFilterBtn" class="secondary" type="button">Run Filters</button>
+        </div>
+
+        <div id="txnStatus" class="status">Ready to test full transaction CRUD + filters.</div>
+      </article>
+
+      <article class="card full-span">
+        <h2>Categories &amp; Tags Test (Step 2)</h2>
+        <p class="sub">Create and list categories/tags for current user.</p>
+
+        <div class="row">
+          <div class="field-col">
+            <label for="categoryName">Category Name</label>
+            <input id="categoryName" type="text" placeholder="Food, Travel, Shopping">
+          </div>
+          <div class="field-col">
+            <label for="tagName">Tag Name</label>
+            <input id="tagName" type="text" placeholder="urgent, personal, work">
+          </div>
+        </div>
+
+        <div class="row">
+          <button id="createCategoryBtn" type="button">Create Category</button>
+          <button id="listCategoriesBtn" class="secondary" type="button">List Categories</button>
+          <button id="createTagBtn" type="button">Create Tag</button>
+          <button id="listTagsBtn" class="secondary" type="button">List Tags</button>
+        </div>
+
+        <div id="catTagStatus" class="status">Ready to test categories and tags endpoints.</div>
+      </article>
+
+      <article class="card full-span">
+        <h2>Monthly and Weekly Summary</h2>
+        <p class="sub">Fetch totals, balance, and category breakdown for the current week or month.</p>
+
+        <div class="row">
+          <div class="field-col">
+            <label for="summaryPeriod">Period</label>
+            <input id="summaryPeriod" type="text" placeholder="weekly or monthly" value="monthly">
+          </div>
+        </div>
+
+        <div class="row">
+          <button id="summaryMonthlyBtn" type="button">Load Monthly Summary</button>
+          <button id="summaryWeeklyBtn" class="secondary" type="button">Load Weekly Summary</button>
+          <button id="summaryCustomBtn" class="warn" type="button">Load Period From Input</button>
+        </div>
+
+        <div id="summaryStatus" class="status">Ready to test weekly and monthly summaries.</div>
+      </article>
+
+      <article class="card full-span">
+        <h2>Budgets</h2>
+        <p class="sub">Create, list, and check budget limits with alerts.</p>
+
+        <div class="row">
+          <div class="field-col">
+            <label for="budgetCategory">Category</label>
+            <input id="budgetCategory" type="text" placeholder="Food, Rent">
+          </div>
+          <div class="field-col">
+            <label for="budgetLimit">Limit Amount</label>
+            <input id="budgetLimit" type="number" step="0.01" placeholder="500.00">
+          </div>
+          <div class="field-col">
+            <label for="budgetPeriod">Period</label>
+            <input id="budgetPeriod" type="text" placeholder="monthly or weekly" value="monthly">
+          </div>
+        </div>
+
+        <div class="row">
+          <button id="createBudgetBtn" type="button">Create/Update Budget</button>
+          <button id="listBudgetsBtn" class="secondary" type="button">List Budgets</button>
+        </div>
+
+        <div id="budgetStatus" class="status">Ready to test budget management.</div>
+      </article>
+
+      <article class="card full-span">
+        <h2>Export Transactions</h2>
+        <p class="sub">Export transactions as CSV or JSON with optional filters. Click export to automatically download the file! 📥</p>
+
+        <div class="row">
+          <div class="field-col">
+            <label for="exportFormat">Format</label>
+            <select id="exportFormat">
+              <option value="json">JSON</option>
+              <option value="csv">CSV</option>
+            </select>
+          </div>
+          <div class="field-col">
+            <label for="exportType">Type</label>
+            <input id="exportType" type="text" placeholder="income or expense">
+          </div>
+          <div class="field-col">
+            <label for="exportCategory">Category</label>
+            <input id="exportCategory" type="text" placeholder="Food">
+          </div>
+        </div>
+
+        <div class="row">
+          <button id="exportBtn" type="button">Export Transactions</button>
+        </div>
+
+        <div id="exportStatus" class="status">Ready to test export functionality.</div>
+      </article>
+
+      <article class="card full-span">
+        <h2>Roadmap Feature Slots</h2>
+        <ul class="feature-list">
+          <li>Authentication with bcrypt and JWT protection</li>
+          <li>CRUD transactions with user linking</li>
+          <li>Categories and tags</li>
+          <li>Filters by type/date/category/tags and sorting</li>
+          <li>Monthly and weekly summary endpoint</li>
+          <li>Recurring transactions automation</li>
+          <li>Budget limit alerts</li>
+          <li>CSV and JSON export</li>
+        </ul>
+      </article>
+
+      <article class="card full-span">
+        <h2>Response Output</h2>
+        <pre id="output">No request yet.</pre>
+      </article>
+    </section>
+  </main>
+
+  <script>
+
+    const statusEl = document.getElementById('status');
+    const forgotStatusEl = document.getElementById('forgotStatus');
+    const resetStatusEl = document.getElementById('resetStatus');
+    const outputEl = document.getElementById('output');
+    const tokenEl = document.getElementById('token');
+    const txnStatusEl = document.getElementById('txnStatus');
+    const catTagStatusEl = document.getElementById('catTagStatus');
+    const emailEl = document.getElementById('email');
+    const forgotEmailEl = document.getElementById('forgotEmail');
+    const passwordEl = document.getElementById('password');
+    const nameEl = document.getElementById('name');
+    const resetPasswordEl = document.getElementById('resetPassword');
+    const resetCodeEl = document.getElementById('resetCode');
+    const txnTitleEl = document.getElementById('txnTitle');
+    const txnAmountEl = document.getElementById('txnAmount');
+    const txnTypeEl = document.getElementById('txnType');
+    const txnCategoryEl = document.getElementById('txnCategory');
+    const txnTagsEl = document.getElementById('txnTags');
+    const txnNotesEl = document.getElementById('txnNotes');
+    const txnBudgetLimitEl = document.getElementById('txnBudgetLimit');
+    const txnRecurringEl = document.getElementById('txnRecurring');
+    const txnRecurringIntervalEl = document.getElementById('txnRecurringInterval');
+    const txnCreatedAtEl = document.getElementById('txnCreatedAt');
+    const txnIdEl = document.getElementById('txnId');
+    const filterTypeEl = document.getElementById('filterType');
+    const filterCategoryEl = document.getElementById('filterCategory');
+    const filterTagsEl = document.getElementById('filterTags');
+    const filterStartDateEl = document.getElementById('filterStartDate');
+    const filterEndDateEl = document.getElementById('filterEndDate');
+    const filterSortByEl = document.getElementById('filterSortBy');
+    const filterSortOrderEl = document.getElementById('filterSortOrder');
+    const categoryNameEl = document.getElementById('categoryName');
+    const tagNameEl = document.getElementById('tagName');
+    const summaryPeriodEl = document.getElementById('summaryPeriod');
+    const summaryStatusEl = document.getElementById('summaryStatus');
+    const budgetCategoryEl = document.getElementById('budgetCategory');
+    const budgetLimitEl = document.getElementById('budgetLimit');
+    const budgetPeriodEl = document.getElementById('budgetPeriod');
+    const budgetStatusEl = document.getElementById('budgetStatus');
+    const exportFormatEl = document.getElementById('exportFormat');
+    const exportTypeEl = document.getElementById('exportType');
+    const exportCategoryEl = document.getElementById('exportCategory');
+    const exportStatusEl = document.getElementById('exportStatus');
+
+    tokenEl.value = localStorage.getItem('mytrancyToken') || '';
+
+    function setStatus(message, kind) {
+      statusEl.textContent = message;
+      statusEl.className = 'status' + (kind ? ' ' + kind : '');
+    }
+
+    function setForgotStatus(message, kind) {
+      forgotStatusEl.textContent = message;
+      forgotStatusEl.className = 'status' + (kind ? ' ' + kind : '');
+    }
+
+    function setResetStatus(message, kind) {
+      resetStatusEl.textContent = message;
+      resetStatusEl.className = 'status' + (kind ? ' ' + kind : '');
+    }
+
+    function setTxnStatus(message, kind) {
+      txnStatusEl.textContent = message;
+      txnStatusEl.className = 'status' + (kind ? ' ' + kind : '');
+    }
+
+    function setCatTagStatus(message, kind) {
+      catTagStatusEl.textContent = message;
+      catTagStatusEl.className = 'status' + (kind ? ' ' + kind : '');
+    }
+
+    function setSummaryStatus(message, kind) {
+      summaryStatusEl.textContent = message;
+      summaryStatusEl.className = 'status' + (kind ? ' ' + kind : '');
+    }
+
+    function setBudgetStatus(message, kind) {
+      budgetStatusEl.textContent = message;
+      budgetStatusEl.className = 'status' + (kind ? ' ' + kind : '');
+    }
+
+    function setExportStatus(message, kind) {
+      exportStatusEl.textContent = message;
+      exportStatusEl.className = 'status' + (kind ? ' ' + kind : '');
+    }
+
+    function pretty(data) {
+      return JSON.stringify(data, null, 2);
+    }
+
+    async function request(path, options = {}) {
+      setStatus('Requesting ' + path + ' ...');
+      try {
+        const response = await fetch(path, options);
+        const text = await response.text();
+        let body;
+        try {
+          body = JSON.parse(text);
+        } catch {
+          body = text;
+        }
+
+        outputEl.textContent = pretty({
+          status: response.status,
+          ok: response.ok,
+          body
+        });
+
+        setStatus(response.ok ? 'Success' : 'Request failed', response.ok ? 'ok' : 'err');
+        return { response, body };
+      } catch (error) {
+        outputEl.textContent = pretty({ error: String(error) });
+        setStatus('Network or server error', 'err');
+        return null;
+      }
+    }
+
+    document.getElementById('signupBtn').addEventListener('click', async () => {
+      const payload = {
+        name: nameEl.value.trim(),
+        email: emailEl.value.trim(),
+        password: passwordEl.value
+      };
+      const result = await request('/signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      if (result && result.body && result.body.token) {
+        tokenEl.value = result.body.token;
+        localStorage.setItem('mytrancyToken', result.body.token);
+      }
+    });
+
+    document.getElementById('loginBtn').addEventListener('click', async () => {
+      const payload = {
+        email: emailEl.value.trim(),
+        password: passwordEl.value
+      };
+      const result = await request('/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      if (result && result.body && result.body.token) {
+        tokenEl.value = result.body.token;
+        localStorage.setItem('mytrancyToken', result.body.token);
+      }
+    });
+
+    document.getElementById('forgotCodeBtn').addEventListener('click', async () => {
+      const email = forgotEmailEl.value.trim() || emailEl.value.trim();
+
+      if (!email) {
+        setForgotStatus('Enter an email address first.', 'err');
+        return;
+      }
+
+      if (!/^([^\s@]+@[^\s@]+\.[^\s@]+)$/.test(email)) {
+        setForgotStatus('Enter a valid email address.', 'err');
+        return;
+      }
+
+      setForgotStatus('Requesting 6-digit code...');
+
+      const result = await request('/forgot-password/code/request', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email })
+      });
+
+      if (result && result.response && result.response.ok) {
+        if (result.body && result.body.devCode) {
+          resetCodeEl.value = String(result.body.devCode);
+          setForgotStatus('Code generated. In dev mode, code auto-filled from response.', 'ok');
+        } else {
+          setForgotStatus('Code sent. Check your email provider integration.', 'ok');
+        }
+      } else if (result && result.body && result.body.message) {
+        setForgotStatus(result.body.message, 'err');
+      }
+    });
+
+    document.getElementById('verifyCodeBtn').addEventListener('click', async () => {
+      const email = forgotEmailEl.value.trim() || emailEl.value.trim();
+      const code = resetCodeEl.value.trim();
+
+      if (!email) {
+        setForgotStatus('Enter an email address first.', 'err');
+        return;
+      }
+
+      if (!/^([0-9]{6})$/.test(code)) {
+        setForgotStatus('Enter a valid 6-digit code first.', 'err');
+        return;
+      }
+
+      const result = await request('/forgot-password/code/verify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, code })
+      });
+
+      if (result && result.response && result.response.ok) {
+        setForgotStatus('Code verified. You can reset password now.', 'ok');
+        setResetStatus('Code verified. Set new password and click reset.', 'ok');
+      } else if (result && result.body && result.body.message) {
+        setForgotStatus(result.body.message, 'err');
+      }
+    });
+
+    document.getElementById('setPasswordBtn').addEventListener('click', async () => {
+      const newPassword = resetPasswordEl.value.trim();
+      const email = forgotEmailEl.value.trim() || emailEl.value.trim();
+      const code = resetCodeEl.value.trim();
+
+      if (!email) {
+        setResetStatus('Enter recovery email first.', 'err');
+        return;
+      }
+
+      if (!/^([0-9]{6})$/.test(code)) {
+        setResetStatus('Enter a valid 6-digit code first.', 'err');
+        return;
+      }
+
+      if (!newPassword) {
+        setResetStatus('Enter a new password first.', 'err');
+        return;
+      }
+
+      setResetStatus('Resetting password...');
+
+      const result = await request('/forgot-password/code/reset', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, code, newPassword })
+      });
+
+      if (!result || !result.response || !result.response.ok) {
+        setResetStatus((result && result.body && result.body.message) || 'Reset failed', 'err');
+        return;
+      }
+
+      setResetStatus('Password updated successfully.', 'ok');
+      outputEl.textContent = pretty({
+        ok: true,
+        message: 'Password updated via 6-digit code flow'
+      });
+      resetPasswordEl.value = '';
+      resetCodeEl.value = '';
+    });
+
+    document.getElementById('meBtn').addEventListener('click', async () => {
+      const token = tokenEl.value.trim();
+      await request('/me', {
+        headers: token ? { Authorization: 'Bearer ' + token } : {}
+      });
+    });
+
+    document.getElementById('saveTokenBtn').addEventListener('click', () => {
+      localStorage.setItem('mytrancyToken', tokenEl.value.trim());
+      setStatus('Token saved', 'ok');
+    });
+
+    document.getElementById('clearTokenBtn').addEventListener('click', () => {
+      tokenEl.value = '';
+      localStorage.removeItem('mytrancyToken');
+      setStatus('Token cleared');
+    });
+
+    document.getElementById('txnCreateBtn').addEventListener('click', async () => {
+      const token = tokenEl.value.trim();
+      if (!token) {
+        setTxnStatus('Login first so token is available.', 'err');
+        return;
+      }
+
+      const title = txnTitleEl.value.trim();
+      const amount = Number(txnAmountEl.value);
+      const type = txnTypeEl.value.trim().toLowerCase();
+      const category = txnCategoryEl.value.trim();
+      const tags = txnTagsEl.value.trim();
+      const notes = txnNotesEl.value.trim();
+      const budgetLimitRaw = txnBudgetLimitEl.value.trim();
+      const recurringRaw = txnRecurringEl.value.trim().toLowerCase();
+      const recurringInterval = txnRecurringIntervalEl.value.trim();
+      const createdAtRaw = txnCreatedAtEl.value;
+
+      if (!title || !Number.isFinite(amount) || !['income', 'expense'].includes(type)) {
+        setTxnStatus('Fill title, amount, and type (income/expense).', 'err');
+        return;
+      }
+
+      const payload = {
+        title,
+        amount,
+        type,
+        category
+      };
+
+      if (tags) {
+        payload.tags = tags.split(',').map(tag => tag.trim()).filter(Boolean);
+      }
+
+      if (notes) {
+        payload.notes = notes;
+      }
+
+      if (budgetLimitRaw) {
+        const budgetLimit = Number(budgetLimitRaw);
+        if (!Number.isFinite(budgetLimit)) {
+          setTxnStatus('budgetLimit must be a valid number.', 'err');
+          return;
+        }
+        payload.budgetLimit = budgetLimit;
+      }
+
+      if (recurringRaw === 'true' || recurringRaw === 'false') {
+        payload.recurring = recurringRaw === 'true';
+      }
+
+      if (recurringInterval) {
+        payload.recurringInterval = recurringInterval;
+      }
+
+      if (createdAtRaw) {
+        payload.createdAt = new Date(createdAtRaw).toISOString();
+      }
+
+      setTxnStatus('Creating transaction...');
+
+      const result = await request('/transactions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: 'Bearer ' + token
+        },
+        body: JSON.stringify(payload)
+      });
+
+      if (result && result.response && result.response.ok) {
+        const createdId = result.body && result.body.transaction && result.body.transaction.id;
+        if (createdId) {
+          txnIdEl.value = createdId;
+        }
+        setTxnStatus('Transaction created.', 'ok');
+      } else {
+        setTxnStatus((result && result.body && result.body.message) || 'Create failed', 'err');
+      }
+    });
+
+    document.getElementById('txnListBtn').addEventListener('click', async () => {
+      const token = tokenEl.value.trim();
+      if (!token) {
+        setTxnStatus('Login first so token is available.', 'err');
+        return;
+      }
+
+      setTxnStatus('Loading transactions...');
+
+      const result = await request('/transactions', {
+        headers: {
+          Authorization: 'Bearer ' + token
+        }
+      });
+
+      if (result && result.response && result.response.ok) {
+        setTxnStatus('Transactions loaded.', 'ok');
+      } else {
+        setTxnStatus((result && result.body && result.body.message) || 'Load failed', 'err');
+      }
+    });
+
+    document.getElementById('txnGetBtn').addEventListener('click', async () => {
+      const token = tokenEl.value.trim();
+      const id = txnIdEl.value.trim();
+
+      if (!token) {
+        setTxnStatus('Login first so token is available.', 'err');
+        return;
+      }
+
+      if (!id) {
+        setTxnStatus('Paste transaction id first.', 'err');
+        return;
+      }
+
+      const result = await request('/transactions/' + encodeURIComponent(id), {
+        headers: {
+          Authorization: 'Bearer ' + token
+        }
+      });
+
+      if (result && result.response && result.response.ok) {
+        setTxnStatus('Transaction loaded by id.', 'ok');
+      } else {
+        setTxnStatus((result && result.body && result.body.message) || 'Get by id failed', 'err');
+      }
+    });
+
+    document.getElementById('txnUpdateBtn').addEventListener('click', async () => {
+      const token = tokenEl.value.trim();
+      const id = txnIdEl.value.trim();
+
+      if (!token) {
+        setTxnStatus('Login first so token is available.', 'err');
+        return;
+      }
+
+      if (!id) {
+        setTxnStatus('Paste transaction id first.', 'err');
+        return;
+      }
+
+      const payload = {};
+      if (txnTitleEl.value.trim()) payload.title = txnTitleEl.value.trim();
+      if (txnAmountEl.value.trim()) payload.amount = Number(txnAmountEl.value);
+      if (txnTypeEl.value.trim()) payload.type = txnTypeEl.value.trim().toLowerCase();
+      if (txnCategoryEl.value.trim()) payload.category = txnCategoryEl.value.trim();
+      if (txnTagsEl.value.trim()) payload.tags = txnTagsEl.value.split(',').map(tag => tag.trim()).filter(Boolean);
+      if (txnNotesEl.value.trim()) payload.notes = txnNotesEl.value.trim();
+      if (txnBudgetLimitEl.value.trim()) payload.budgetLimit = Number(txnBudgetLimitEl.value);
+
+      const recurringRaw = txnRecurringEl.value.trim().toLowerCase();
+      if (recurringRaw === 'true' || recurringRaw === 'false') {
+        payload.recurring = recurringRaw === 'true';
+      }
+
+      if (txnRecurringIntervalEl.value.trim()) {
+        payload.recurringInterval = txnRecurringIntervalEl.value.trim();
+      }
+
+      if (txnCreatedAtEl.value) {
+        payload.createdAt = new Date(txnCreatedAtEl.value).toISOString();
+      }
+
+      if (Object.keys(payload).length === 0) {
+        setTxnStatus('Enter at least one field to update.', 'err');
+        return;
+      }
+
+      const result = await request('/transactions/' + encodeURIComponent(id), {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: 'Bearer ' + token
+        },
+        body: JSON.stringify(payload)
+      });
+
+      if (result && result.response && result.response.ok) {
+        setTxnStatus('Transaction updated.', 'ok');
+      } else {
+        setTxnStatus((result && result.body && result.body.message) || 'Update failed', 'err');
+      }
+    });
+
+    document.getElementById('txnDeleteBtn').addEventListener('click', async () => {
+      const token = tokenEl.value.trim();
+      const id = txnIdEl.value.trim();
+
+      if (!token) {
+        setTxnStatus('Login first so token is available.', 'err');
+        return;
+      }
+
+      if (!id) {
+        setTxnStatus('Paste transaction id first.', 'err');
+        return;
+      }
+
+      const result = await request('/transactions/' + encodeURIComponent(id), {
+        method: 'DELETE',
+        headers: {
+          Authorization: 'Bearer ' + token
+        }
+      });
+
+      if (result && result.response && result.response.ok) {
+        setTxnStatus('Transaction deleted.', 'ok');
+      } else {
+        setTxnStatus((result && result.body && result.body.message) || 'Delete failed', 'err');
+      }
+    });
+
+    document.getElementById('txnFilterBtn').addEventListener('click', async () => {
+      const token = tokenEl.value.trim();
+
+      if (!token) {
+        setTxnStatus('Login first so token is available.', 'err');
+        return;
+      }
+
+      const params = new URLSearchParams();
+      const type = filterTypeEl.value.trim().toLowerCase();
+      const category = filterCategoryEl.value.trim();
+      const tags = filterTagsEl.value.trim();
+      const startDate = filterStartDateEl.value;
+      const endDate = filterEndDateEl.value;
+      const sortBy = filterSortByEl.value.trim();
+      const sortOrder = filterSortOrderEl.value.trim().toLowerCase();
+
+      if (type) params.set('type', type);
+      if (category) params.set('category', category);
+      if (tags) params.set('tags', tags);
+      if (startDate) params.set('startDate', new Date(startDate).toISOString());
+      if (endDate) params.set('endDate', new Date(endDate + 'T23:59:59').toISOString());
+      if (sortBy) params.set('sortBy', sortBy);
+      if (sortOrder) params.set('sortOrder', sortOrder);
+
+      const url = '/transactions/filters' + (params.toString() ? '?' + params.toString() : '');
+      const result = await request(url, {
+        headers: {
+          Authorization: 'Bearer ' + token
+        }
+      });
+
+      if (result && result.response && result.response.ok) {
+        setTxnStatus('Filters applied.', 'ok');
+      } else {
+        setTxnStatus((result && result.body && result.body.message) || 'Filter query failed', 'err');
+      }
+    });
+
+    async function loadSummary(period) {
+      const token = tokenEl.value.trim();
+
+      if (!token) {
+        setSummaryStatus('Login first so token is available.', 'err');
+        return;
+      }
+
+      const normalizedPeriod = String(period || '').trim().toLowerCase();
+      if (!['weekly', 'monthly'].includes(normalizedPeriod)) {
+        setSummaryStatus('Period must be weekly or monthly.', 'err');
+        return;
+      }
+
+      setSummaryStatus('Loading ' + normalizedPeriod + ' summary...');
+
+      const result = await request('/transactions/summary?period=' + encodeURIComponent(normalizedPeriod), {
+        headers: {
+          Authorization: 'Bearer ' + token
+        }
+      });
+
+      if (result && result.response && result.response.ok) {
+        setSummaryStatus(normalizedPeriod + ' summary loaded.', 'ok');
+      } else {
+        setSummaryStatus((result && result.body && result.body.message) || 'Summary request failed', 'err');
+      }
+    }
+
+    document.getElementById('summaryMonthlyBtn').addEventListener('click', async () => {
+      summaryPeriodEl.value = 'monthly';
+      await loadSummary('monthly');
+    });
+
+    document.getElementById('summaryWeeklyBtn').addEventListener('click', async () => {
+      summaryPeriodEl.value = 'weekly';
+      await loadSummary('weekly');
+    });
+
+    document.getElementById('summaryCustomBtn').addEventListener('click', async () => {
+      await loadSummary(summaryPeriodEl.value);
+    });
+
+    document.getElementById('createBudgetBtn').addEventListener('click', async () => {
+      const token = tokenEl.value.trim();
+      const category = budgetCategoryEl.value.trim();
+      const limitAmount = parseFloat(budgetLimitEl.value.trim());
+      const period = budgetPeriodEl.value.trim();
+
+      if (!token) {
+        setBudgetStatus('Login first so token is available.', 'err');
+        return;
+      }
+
+      if (!category || isNaN(limitAmount)) {
+        setBudgetStatus('Enter category and valid limit amount.', 'err');
+        return;
+      }
+
+      const result = await request('/budgets', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: 'Bearer ' + token
+        },
+        body: JSON.stringify({ category, limitAmount, period })
+      });
+
+      if (result && result.response && result.response.ok) {
+        setBudgetStatus('Budget created/updated.', 'ok');
+      } else {
+        setBudgetStatus((result && result.body && result.body.message) || 'Create budget failed', 'err');
+      }
+    });
+
+    document.getElementById('listBudgetsBtn').addEventListener('click', async () => {
+      const token = tokenEl.value.trim();
+      if (!token) {
+        setBudgetStatus('Login first so token is available.', 'err');
+        return;
+      }
+
+      const result = await request('/budgets', {
+        headers: {
+          Authorization: 'Bearer ' + token
+        }
+      });
+
+      if (result && result.response && result.response.ok) {
+        setBudgetStatus('Budgets loaded.', 'ok');
+      } else {
+        setBudgetStatus((result && result.body && result.body.message) || 'List budgets failed', 'err');
+      }
+    });
+
+    document.getElementById('exportBtn').addEventListener('click', async () => {
+      const token = tokenEl.value.trim();
+      const format = exportFormatEl.value;
+      const type = exportTypeEl.value.trim();
+      const category = exportCategoryEl.value.trim();
+
+      if (!token) {
+        setExportStatus('Login first so token is available.', 'err');
+        return;
+      }
+
+      // Create download URL with parameters
+      const params = new URLSearchParams({ format });
+      if (type) params.append('type', type);
+      if (category) params.append('category', category);
+
+      const downloadUrl = `/transactions/export?${params.toString()}`;
+
+      // For browsers that support it, we can set headers, but most don't
+      // So we'll make a fetch request and create a blob URL
+      try {
+        setExportStatus('Downloading file...', 'ok');
+
+        const response = await fetch(downloadUrl, {
+          headers: {
+            'Authorization': 'Bearer ' + token
+          }
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+
+        const blob = await response.blob();
+        const blobUrl = URL.createObjectURL(blob);
+
+        const link = document.createElement('a');
+        link.href = blobUrl;
+        link.style.display = 'none';
+        link.download = `transactions-${new Date().toISOString().split('T')[0]}.${format}`;
+
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+
+        // Clean up the blob URL
+        setTimeout(() => URL.revokeObjectURL(blobUrl), 100);
+
+        setExportStatus(`✅ File downloaded successfully as transactions-${new Date().toISOString().split('T')[0]}.${format}`, 'ok');
+      } catch (error) {
+        setExportStatus(`❌ Download failed: ${error.message}`, 'err');
+        console.error('Download error:', error);
+      }
+    });
+
+    document.getElementById('createCategoryBtn').addEventListener('click', async () => {
+      const token = tokenEl.value.trim();
+      const name = categoryNameEl.value.trim();
+
+      if (!token) {
+        setCatTagStatus('Login first so token is available.', 'err');
+        return;
+      }
+
+      if (!name) {
+        setCatTagStatus('Enter category name first.', 'err');
+        return;
+      }
+
+      const result = await request('/categories', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: 'Bearer ' + token
+        },
+        body: JSON.stringify({ name })
+      });
+
+      if (result && result.response && result.response.ok) {
+        setCatTagStatus('Category created.', 'ok');
+      } else {
+        setCatTagStatus((result && result.body && result.body.message) || 'Create category failed', 'err');
+      }
+    });
+
+    document.getElementById('listCategoriesBtn').addEventListener('click', async () => {
+      const token = tokenEl.value.trim();
+      if (!token) {
+        setCatTagStatus('Login first so token is available.', 'err');
+        return;
+      }
+
+      const result = await request('/categories', {
+        headers: {
+          Authorization: 'Bearer ' + token
+        }
+      });
+
+      if (result && result.response && result.response.ok) {
+        setCatTagStatus('Categories loaded.', 'ok');
+      } else {
+        setCatTagStatus((result && result.body && result.body.message) || 'List categories failed', 'err');
+      }
+    });
+
+    document.getElementById('createTagBtn').addEventListener('click', async () => {
+      const token = tokenEl.value.trim();
+      const name = tagNameEl.value.trim();
+
+      if (!token) {
+        setCatTagStatus('Login first so token is available.', 'err');
+        return;
+      }
+
+      if (!name) {
+        setCatTagStatus('Enter tag name first.', 'err');
+        return;
+      }
+
+      const result = await request('/tags', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: 'Bearer ' + token
+        },
+        body: JSON.stringify({ name })
+      });
+
+      if (result && result.response && result.response.ok) {
+        setCatTagStatus('Tag created.', 'ok');
+      } else {
+        setCatTagStatus((result && result.body && result.body.message) || 'Create tag failed', 'err');
+      }
+    });
+
+    document.getElementById('listTagsBtn').addEventListener('click', async () => {
+      const token = tokenEl.value.trim();
+      if (!token) {
+        setCatTagStatus('Login first so token is available.', 'err');
+        return;
+      }
+
+      const result = await request('/tags', {
+        headers: {
+          Authorization: 'Bearer ' + token
+        }
+      });
+
+      if (result && result.response && result.response.ok) {
+        setCatTagStatus('Tags loaded.', 'ok');
+      } else {
+        setCatTagStatus((result && result.body && result.body.message) || 'List tags failed', 'err');
+      }
+    });
+
+    setResetStatus('Ready: request code, then reset password.', 'ok');
+    setTxnStatus('Ready: login then run transaction CRUD + filters.', 'ok');
+    setCatTagStatus('Ready: login then create/list categories and tags.', 'ok');
+    setSummaryStatus('Ready to test weekly and monthly summaries.', 'ok');
+    setBudgetStatus('Ready to test budget management.', 'ok');
+    setExportStatus('Ready to test export functionality.', 'ok');
+  </script>
+</body>
+</html>
