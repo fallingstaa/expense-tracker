@@ -1,0 +1,15 @@
+# Secrets and environment variables
+.env
+.env.*
+!.env.example
+
+# Node / build artifacts
+node_modules/
+.next/
+out/
+
+# Logs
+*.log
+
+# Editor
+.vscode/
