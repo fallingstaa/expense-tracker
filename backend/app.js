@@ -1,7 +1,9 @@
 import cors from 'cors';
 import express from 'express';
+import { readFileSync } from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import swaggerUi from 'swagger-ui-express';
 
 import authMiddleware from './middleware/auth.js';
 import authRoutes from './routes/auth.js';
@@ -14,6 +16,8 @@ import supabase from './utils/supabaseClient.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+const swaggerSpecPath = path.join(__dirname, 'docs', 'swaggerSpec.json');
+const swaggerSpec = JSON.parse(readFileSync(swaggerSpecPath, 'utf8'));
 
 const app = express();
 
@@ -35,6 +39,14 @@ app.get('/', (req, res) => {
 
 app.get('/tester', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'tester.html'));
+});
+
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, { explorer: true }));
+app.get('/docs', (req, res) => {
+  res.redirect('/api-docs/');
+});
+app.get('/docs/', (req, res) => {
+  res.redirect('/api-docs/');
 });
 
 app.get('/supabase-test', async (req, res) => {
