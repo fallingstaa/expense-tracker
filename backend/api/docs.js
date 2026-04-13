@@ -1,16 +1,15 @@
 import dotenv from 'dotenv';
-import express from 'express';
-import serverless from 'serverless-http';
+import { readFileSync } from 'fs';
 import swaggerUi from 'swagger-ui-express';
-
-import swaggerSpec from '../docs/swaggerConfig.js';
 
 dotenv.config();
 
-const app = express();
+const swaggerSpecPath = new URL('../docs/swaggerSpec.json', import.meta.url);
+const swaggerSpec = JSON.parse(readFileSync(swaggerSpecPath, 'utf8'));
+const html = swaggerUi.generateHTML(swaggerSpec, { explorer: true });
 
-app.use('/', swaggerUi.serve);
-app.get('/', swaggerUi.setup(swaggerSpec, { explorer: true }));
-
-export const handler = serverless(app);
-export default handler;
+export default function handler(req, res) {
+  res.statusCode = 200;
+  res.setHeader('Content-Type', 'text/html; charset=utf-8');
+  res.end(html);
+}

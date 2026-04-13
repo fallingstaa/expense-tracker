@@ -1,8 +1,16 @@
 {
   "version": 2,
+  "buildCommand": "npm run build",
   "routes": [
     {
       "src": "/api/docs",
+      "status": 308,
+      "headers": {
+        "Location": "/api/docs/"
+      }
+    },
+    {
+      "src": "/api/docs/",
       "dest": "/api/docs.js"
     },
     {

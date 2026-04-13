@@ -624,7 +624,7 @@
         email: emailEl.value.trim(),
         password: passwordEl.value
       };
-      const result = await request('/signup', {
+      const result = await request('/auth/signup', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
@@ -640,7 +640,7 @@
         email: emailEl.value.trim(),
         password: passwordEl.value
       };
-      const result = await request('/login', {
+      const result = await request('/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
@@ -666,15 +666,16 @@
 
       setForgotStatus('Requesting 6-digit code...');
 
-      const result = await request('/forgot-password/code/request', {
+      const result = await request('/auth/forgot-password/code/request', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email })
       });
 
       if (result && result.response && result.response.ok) {
-        if (result.body && result.body.devCode) {
-          resetCodeEl.value = String(result.body.devCode);
+        const devCode = result && result.body && (result.body.devResetCode || result.body.devCode);
+        if (devCode) {
+          resetCodeEl.value = String(devCode);
           setForgotStatus('Code generated. In dev mode, code auto-filled from response.', 'ok');
         } else {
           setForgotStatus('Code sent. Check your email provider integration.', 'ok');
@@ -698,7 +699,7 @@
         return;
       }
 
-      const result = await request('/forgot-password/code/verify', {
+      const result = await request('/auth/forgot-password/code/verify', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, code })
@@ -734,7 +735,7 @@
 
       setResetStatus('Resetting password...');
 
-      const result = await request('/forgot-password/code/reset', {
+      const result = await request('/auth/forgot-password/code/reset', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, code, newPassword })

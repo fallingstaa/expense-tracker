@@ -6,6 +6,7 @@
   "type": "module",
   "scripts": {
     "dev": "nodemon index.js",
+    "build": "node scripts/generate-swagger.mjs",
     "start": "node index.js"
   },
   "main": "index.js",
