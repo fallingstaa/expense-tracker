@@ -1,13 +1,35 @@
 import { useState } from "react";
 import { emptyForm } from "../components/dashboard/transaction/transactionUtils";
+import {
+  useCreateTransactionMutation,
+  useDeleteTransactionMutation,
+  useGetTransactionsQuery,
+  useUpdateTransactionMutation,
+} from "../redux/feature/transactions/transactionsAPI";
 
 export const useTransaction = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [type, setType] = useState("expense");
   const [recurring, setRecurring] = useState(false);
-  const [transactions, setTransactions] = useState([]);
   const [form, setForm] = useState(emptyForm);
   const [editId, setEditId] = useState(null);
+
+  const {
+    data,
+    isLoading,
+    isFetching,
+    error,
+    refetch,
+  } = useGetTransactionsQuery();
+
+  const [createTransaction, { isLoading: isCreating }] =
+    useCreateTransactionMutation();
+  const [updateTransaction, { isLoading: isUpdating }] =
+    useUpdateTransactionMutation();
+  const [deleteTransaction, { isLoading: isDeleting }] =
+    useDeleteTransactionMutation();
+
+  const transactions = data?.transactions ?? [];
 
   const openAdd = () => {
     setEditId(null);
@@ -23,7 +45,7 @@ export const useTransaction = () => {
       title: t.title,
       amount: t.amount,
       category: t.category,
-      tags: t.tags,
+      tags: Array.isArray(t.tags) ? t.tags.join(", ") : t.tags || "",
       notes: t.notes,
       date: t.date,
     });
@@ -32,20 +54,32 @@ export const useTransaction = () => {
     setIsOpen(true);
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!form.title || !form.amount) return;
-    setTransactions(
-      editId
-        ? transactions.map((t) =>
-            t.id === editId ? { ...form, type, recurring, id: t.id } : t,
-          )
-        : [...transactions, { ...form, type, recurring, id: Date.now() }],
-    );
+
+    const payload = {
+      title: form.title,
+      amount: Number(form.amount),
+      type,
+      category: form.category || null,
+      tags: form.tags || "",
+      notes: form.notes || "",
+      recurring,
+      date: form.date,
+    };
+
+    if (editId) {
+      await updateTransaction({ id: editId, payload }).unwrap();
+    } else {
+      await createTransaction(payload).unwrap();
+    }
+
     setIsOpen(false);
   };
 
-  const handleDelete = (id) =>
-    setTransactions(transactions.filter((t) => t.id !== id));
+  const handleDelete = async (id) => {
+    await deleteTransaction(id).unwrap();
+  };
 
   return {
     isOpen,
@@ -63,6 +97,12 @@ export const useTransaction = () => {
     openEdit,
     handleSave,
     handleDelete,
+    isLoading,
+    isFetching,
+    isSaving: isCreating || isUpdating,
+    isDeleting,
+    error,
+    refetch,
     onClose: () => setIsOpen(false),
   };
 };

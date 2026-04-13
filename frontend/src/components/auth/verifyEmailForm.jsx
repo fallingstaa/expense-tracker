@@ -1,15 +1,18 @@
 import { MailCheck } from "lucide-react";
 import { useRef, useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
+import { useAuth } from "../../hooks/useAuth";
 import bg1 from "../../../public/expense.png";
 
-export default function VerifyEmailForm({ email = "you@example.com" }) {
+export default function VerifyEmailForm() {
   const [otp, setOtp] = useState(Array(6).fill(""));
   const [error, setError] = useState("");
   const [verified, setVerified] = useState(false);
   const [seconds, setSeconds] = useState(30);
   const inputs = useRef([]);
   const navigate = useNavigate();
+  const location = useLocation();
+  const email = location.state?.email || "you@example.com";
 
   useEffect(() => {
     inputs.current[0]?.focus();
@@ -73,14 +76,17 @@ export default function VerifyEmailForm({ email = "you@example.com" }) {
     inputs.current[Math.min(digits.length, 5)]?.focus();
   };
 
-  const handleVerify = (e) => {
+  const handleVerify = async (e) => {
     e.preventDefault();
-    if (otp.join("") === "123456") {
-      // replace with your API call
+    const code = otp.join("");
+
+    // For now, accept any 6-digit code as valid
+    // In a real app, this would call an API to verify the code
+    if (code.length === 6) {
       setVerified(true);
-      setTimeout(() => navigate("/dashboard"), 1500);
+      setTimeout(() => navigate("/login"), 1500);
     } else {
-      setError("Incorrect code. Please try again.");
+      setError("Please enter a valid 6-digit code.");
       setOtp(Array(6).fill(""));
       inputs.current[0]?.focus();
     }

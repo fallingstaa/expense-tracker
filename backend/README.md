@@ -23,6 +23,7 @@ This backend provides a complete API for managing personal finances including:
 - **Authentication**: JWT (JSON Web Tokens)
 - **Documentation**: Swagger/OpenAPI 3.0
 - **Development**: Nodemon for hot reloading
+- **Email delivery**: SMTP for password reset codes
 
 ## 📋 Prerequisites
 
@@ -53,9 +54,27 @@ SUPABASE_SERVICE_ROLE_KEY=your-supabase-service-role-key
 # JWT Configuration
 JWT_SECRET=your-secure-jwt-secret-here
 
+# SMTP Configuration for reset code emails
+# Gmail App Passwords and other SMTP providers work here
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_SECURE=false
+SMTP_USER=your-email@example.com
+SMTP_PASS=your-smtp-password-or-app-password
+SMTP_FROM_EMAIL=your-email@example.com
+SMTP_FROM_NAME=MyTrancy
+
+# Supabase Edge Function (Resend) for reset code emails
+# Backend calls this first, then falls back to SMTP if configured.
+# If URL is omitted, backend uses ${SUPABASE_URL}/functions/v1/send-reset-code
+RESET_CODE_FUNCTION_URL=
+RESET_CODE_FUNCTION_KEY=your-supabase-service-role-key
+
 # Server Configuration (optional)
 PORT=5000
 ```
+
+If reset code requests return 200 but email is not delivered, check the JSON response body. In development mode, the API can return a fallback response with `devResetCode` when delivery fails.
 
 ### 3. Database Setup
 

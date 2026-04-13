@@ -17,6 +17,9 @@ const Transaction = () => {
     openEdit,
     handleSave,
     handleDelete,
+    isLoading,
+    isSaving,
+    error,
     onClose,
   } = useTransaction();
 
@@ -38,6 +41,11 @@ const Transaction = () => {
             </div>
 
             {transactions.length === 0 ? (
+              isLoading ? (
+                <div className="pt-20 pb-16 text-center">
+                  <h1 className="text-xl text-mutes font-bold">Loading transactions...</h1>
+                </div>
+              ) : (
               <div className="pt-20 pb-16 text-center">
                 <h1 className="text-xl text-mutes font-bold">
                   No transactions yet
@@ -46,6 +54,7 @@ const Transaction = () => {
                   Add your first transaction to get started
                 </p>
               </div>
+              )
             ) : (
               <div className="space-y-3">
                 {transactions.map((t) => (
@@ -58,6 +67,10 @@ const Transaction = () => {
                 ))}
               </div>
             )}
+
+            {error?.data?.message ? (
+              <p className="mt-4 text-sm text-red-400">{error.data.message}</p>
+            ) : null}
           </div>
         </div>
       </div>
@@ -73,6 +86,7 @@ const Transaction = () => {
         setRecurring={setRecurring}
         onSave={handleSave}
         editId={editId}
+        isSaving={isSaving}
       />
     </section>
   );

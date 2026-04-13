@@ -12,6 +12,7 @@ import swaggerUi from 'swagger-ui-express';
 import swaggerSpec from './docs/swaggerConfig.js';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import cors from 'cors';
 
 dotenv.config();
 
@@ -19,8 +20,9 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
+app.use(cors());
 app.use(express.json());
-app.use(authRoutes);
+app.use('/auth', authRoutes);
 app.use('/transactions', transactionsRoutes);
 app.use('/categories', categoriesRoutes);
 app.use('/tags', tagsRoutes);

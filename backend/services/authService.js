@@ -1,5 +1,6 @@
 import jwt from 'jsonwebtoken';
 import { createClient } from '@supabase/supabase-js';
+import nodemailer from 'nodemailer';
 import supabase from '../utils/supabaseClient.js';
 
 const resetCodes = new Map();
@@ -11,6 +12,130 @@ function normalizeEmail(email) {
 
 function createSixDigitCode() {
 	return String(Math.floor(100000 + Math.random() * 900000));
+}
+
+function getSmtpConfig() {
+	const host = process.env.SMTP_HOST;
+	const port = Number(process.env.SMTP_PORT || 0);
+	const user = process.env.SMTP_USER;
+	const pass = process.env.SMTP_PASS;
+
+	if (!host || !port || !user || !pass) {
+		return null;
+	}
+
+	return {
+		host,
+		port,
+		secure: String(process.env.SMTP_SECURE || '').toLowerCase() === 'true',
+		user,
+		pass,
+		fromEmail: process.env.SMTP_FROM_EMAIL || user,
+		fromName: process.env.SMTP_FROM_NAME || 'MyTrancy'
+	};
+}
+
+function isProductionEnvironment() {
+	return String(process.env.NODE_ENV || '').toLowerCase() === 'production';
+}
+
+function isDevResetFallbackEnabled() {
+	const flag = String(process.env.ALLOW_DEV_RESET_CODE_FALLBACK || '').toLowerCase();
+	if (flag === 'false') {
+		return false;
+	}
+
+	return true;
+}
+
+function getResetCodeEdgeFunctionConfig() {
+	const explicitUrl = String(process.env.RESET_CODE_FUNCTION_URL || '').trim();
+	const supabaseUrl = String(process.env.SUPABASE_URL || '').trim().replace(/\/$/, '');
+	const key =
+		String(process.env.RESET_CODE_FUNCTION_KEY || '').trim() ||
+		String(process.env.SUPABASE_SERVICE_ROLE_KEY || '').trim() ||
+		String(process.env.SUPABASE_KEY || '').trim();
+
+	const url = explicitUrl || (supabaseUrl ? `${supabaseUrl}/functions/v1/send-reset-code` : '');
+	if (!url || !key) {
+		return null;
+	}
+
+	return { url, key };
+}
+
+async function sendResetCodeViaEdgeFunction({ email, code }) {
+	const config = getResetCodeEdgeFunctionConfig();
+	if (!config) {
+		throw new Error(
+			'Reset code edge function is not configured. Set RESET_CODE_FUNCTION_URL and RESET_CODE_FUNCTION_KEY (or SUPABASE_URL with SUPABASE_SERVICE_ROLE_KEY).'
+		);
+	}
+
+	const response = await fetch(config.url, {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+			apikey: config.key,
+			Authorization: `Bearer ${config.key}`
+		},
+		body: JSON.stringify({ email, code })
+	});
+
+	let payload = null;
+	try {
+		payload = await response.json();
+	} catch {
+		payload = null;
+	}
+
+	if (!response.ok) {
+		const details = payload?.error || payload?.message || `status ${response.status}`;
+		throw new Error(`Edge function delivery failed: ${details}`);
+	}
+
+	if (payload?.error) {
+		throw new Error(`Edge function delivery failed: ${payload.error}`);
+	}
+}
+
+async function sendResetCodeEmail({ email, code }) {
+	try {
+		await sendResetCodeViaEdgeFunction({ email, code });
+		return;
+	} catch (edgeError) {
+		const smtpConfig = getSmtpConfig();
+		if (!smtpConfig) {
+			throw edgeError;
+		}
+
+		const transporter = nodemailer.createTransport({
+			host: smtpConfig.host,
+			port: smtpConfig.port,
+			secure: smtpConfig.secure,
+			auth: {
+				user: smtpConfig.user,
+				pass: smtpConfig.pass
+			}
+		});
+
+		await transporter.sendMail({
+			from: `MyTrancy <${smtpConfig.fromEmail}>`,
+			to: email,
+			subject: 'Password Reset Code - MyTrancy',
+			text: `Your reset code is ${code}. This code expires in 10 minutes.`,
+			html: `
+				<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+					<h2>Password Reset Request</h2>
+					<p>You requested a password reset for your MyTrancy account.</p>
+					<p>Your reset code is: <strong style="font-size: 24px; color: #007bff;">${code}</strong></p>
+					<p>This code will expire in 10 minutes.</p>
+					<p>If you didn't request this, please ignore this email.</p>
+					<p>Best regards,<br>MyTrancy Team</p>
+				</div>
+			`
+		});
+	}
 }
 
 function extractMissingColumnName(error) {
@@ -125,24 +250,28 @@ function buildAuthToken(user) {
 }
 
 export async function signup({ email, password, name }) {
+	const normalizedEmail = normalizeEmail(email);
+	const normalizedName = String(name).trim();
+	const normalizedPassword = String(password);
+
 	const serviceClient = getServiceRoleClient();
 	const isAdminClient = Boolean(getAdminClient());
 
 	const { data, error } = isAdminClient
 		? await serviceClient.auth.admin.createUser({
-			email,
-			password,
+			email: normalizedEmail,
+			password: normalizedPassword,
 			email_confirm: true,
 			user_metadata: {
-				name
+				name: normalizedName
 			}
 		})
 		: await supabase.auth.signUp({
-			email,
-			password,
+			email: normalizedEmail,
+			password: normalizedPassword,
 			options: {
 				data: {
-					name
+					name: normalizedName
 				}
 			}
 		});
@@ -161,7 +290,7 @@ export async function signup({ email, password, name }) {
 		user: {
 			id: data.user.id,
 			email: data.user.email,
-			name
+			name: normalizedName
 		},
 		token: buildAuthToken(data.user)
 	};
@@ -219,16 +348,28 @@ export async function requestResetCode({ email }) {
 		attempts: 0
 	});
 
-	const response = {
-		message: 'Reset code generated',
-		expiresInSeconds: Math.floor(resetCodeTtlMs / 1000)
-	};
+	try {
+		await sendResetCodeEmail({ email: normalizedEmail, code });
+	} catch (emailError) {
+		const reason = String(emailError.message || 'Failed to send reset code email');
 
-	if (process.env.NODE_ENV !== 'production') {
-		response.devCode = code;
+		if (!isProductionEnvironment() && isDevResetFallbackEnabled()) {
+			return {
+				message: 'Email delivery is unavailable in development. Use the returned reset code to continue.',
+				expiresInSeconds: Math.floor(resetCodeTtlMs / 1000),
+				devResetCode: code,
+				deliveryError: reason
+			};
+		}
+
+		resetCodes.delete(normalizedEmail);
+		throw new Error(reason);
 	}
 
-	return response;
+	return {
+		message: 'Reset code sent to your email',
+		expiresInSeconds: Math.floor(resetCodeTtlMs / 1000)
+	};
 }
 
 export async function verifyResetCode({ email, code }) {

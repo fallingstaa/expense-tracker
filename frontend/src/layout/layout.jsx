@@ -11,6 +11,7 @@ import DashboardPage from "../pages/dashboard/dashboardPage";
 import ForgotPasswordPage from "../pages/auth/forgotPasswordPage";
 import ResetPaswordPage from "../pages/auth/resetPaswordPage";
 import VerifyEmailPage from "../pages/auth/verifyEmailPage";
+import ProtectedRoute from "../components/auth/protectedRoute";
 
 export const router = createBrowserRouter(
   createRoutesFromElements(
@@ -21,7 +22,11 @@ export const router = createBrowserRouter(
       <Route path="/forgot-password" element={<ForgotPasswordPage />} />
       <Route path="/reset-password" element={<ResetPaswordPage />} />
       <Route path="/verify-email" element={<VerifyEmailPage />} />
-      <Route path="/dashboard" element={<DashboardPage />} />
+      <Route path="/dashboard" element={
+        <ProtectedRoute>
+          <DashboardPage />
+        </ProtectedRoute>
+      } />
     </Route>,
   ),
 );

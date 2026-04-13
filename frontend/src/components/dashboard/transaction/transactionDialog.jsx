@@ -12,6 +12,7 @@ export const TransactionDialog = ({
   setRecurring,
   onSave,
   editId,
+  isSaving,
 }) => {
   if (!isOpen) return null;
 
@@ -153,9 +154,14 @@ export const TransactionDialog = ({
           </button>
           <button
             onClick={onSave}
+            disabled={isSaving}
             className="py-3 rounded-xl cursor-pointer bg-indigo-500 text-white font-semibold text-sm hover:opacity-90 transition-opacity"
           >
-            {editId ? "Save Changes" : "Add Transaction"}
+            {isSaving
+              ? "Saving..."
+              : editId
+                ? "Save Changes"
+                : "Add Transaction"}
           </button>
         </div>
       </div>

@@ -76,7 +76,14 @@ router.post('/signup', async (req, res) => {
     const result = await signup(req.body);
     return res.status(201).json(result);
   } catch (error) {
-    return res.status(400).json({ message: error.message });
+	const message = String(error.message || 'Signup failed');
+	if (message.toLowerCase().includes('already been registered')) {
+		return res.status(409).json({
+			message: 'This email is already registered. Please log in or reset your password.'
+		});
+	}
+
+	return res.status(400).json({ message });
   }
 });
 
