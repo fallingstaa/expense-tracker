@@ -1,4 +1,13 @@
 import swaggerJSDoc from 'swagger-jsdoc';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const serverUrl = process.env.VERCEL_URL
+  ? `https://${process.env.VERCEL_URL}/api`
+  : 'http://localhost:3000/api';
 
 const options = {
   definition: {
@@ -10,8 +19,8 @@ const options = {
     },
     servers: [
       {
-        url: 'http://localhost:5000',
-        description: 'Development server',
+        url: serverUrl,
+        description: 'API server',
       },
     ],
     components: {
@@ -188,7 +197,7 @@ const options = {
       },
     ],
   },
-  apis: ['./routes/*.js'], // Path to the API routes
+  apis: [path.join(__dirname, '../routes/*.js')],
 };
 
 export default swaggerJSDoc(options);
