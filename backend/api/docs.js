@@ -1,15 +1,40 @@
 import dotenv from 'dotenv';
 import { readFileSync } from 'fs';
-import swaggerUi from 'swagger-ui-express';
 
 dotenv.config();
 
 const swaggerSpecPath = new URL('../docs/swaggerSpec.json', import.meta.url);
 const swaggerSpec = JSON.parse(readFileSync(swaggerSpecPath, 'utf8'));
-const html = swaggerUi.generateHTML(swaggerSpec, { explorer: true });
+
+function renderSwaggerHtml(spec) {
+  const specJson = JSON.stringify(spec).replace(/<\//g, '<\\/');
+
+  return `<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MyTrancy API Docs</title>
+    <link rel="stylesheet" href="https://unpkg.com/swagger-ui-dist@5/swagger-ui.css" />
+  </head>
+  <body>
+    <div id="swagger-ui"></div>
+    <script src="https://unpkg.com/swagger-ui-dist@5/swagger-ui-bundle.js"></script>
+    <script>
+      window.ui = SwaggerUIBundle({
+        spec: ${specJson},
+        dom_id: '#swagger-ui',
+        deepLinking: true,
+        displayRequestDuration: true,
+        explorer: true
+      });
+    </script>
+  </body>
+</html>`;
+}
 
 export default function handler(req, res) {
   res.statusCode = 200;
   res.setHeader('Content-Type', 'text/html; charset=utf-8');
-  res.end(html);
+  res.end(renderSwaggerHtml(swaggerSpec));
 }

@@ -5,9 +5,11 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const serverUrl = process.env.VERCEL_URL
-  ? `https://${process.env.VERCEL_URL}/api`
-  : 'http://localhost:3000/api';
+const serverUrl = process.env.SWAGGER_SERVER_URL
+  ? process.env.SWAGGER_SERVER_URL
+  : process.env.VERCEL_URL
+    ? `https://${process.env.VERCEL_URL}/api`
+    : 'http://localhost:5000';
 
 const options = {
   definition: {

@@ -7,7 +7,7 @@
   },
   "servers": [
     {
-      "url": "http://localhost:3000/api",
+      "url": "http://localhost:5000",
       "description": "API server"
     }
   ],
@@ -546,7 +546,7 @@
     }
   ],
   "paths": {
-    "/signup": {
+    "/auth/signup": {
       "post": {
         "summary": "Register a new user",
         "tags": [
@@ -616,7 +616,7 @@
         }
       }
     },
-    "/login": {
+    "/auth/login": {
       "post": {
         "summary": "Login user",
         "tags": [
@@ -680,7 +680,7 @@
         }
       }
     },
-    "/forgot-password": {
+    "/auth/forgot-password": {
       "post": {
         "summary": "Request password reset",
         "tags": [
@@ -736,7 +736,7 @@
         }
       }
     },
-    "/forgot-password/code/request": {
+    "/auth/forgot-password/code/request": {
       "post": {
         "summary": "Request password reset code",
         "tags": [
@@ -792,7 +792,7 @@
         }
       }
     },
-    "/forgot-password/code/verify": {
+    "/auth/forgot-password/code/verify": {
       "post": {
         "summary": "Verify password reset code",
         "tags": [
@@ -853,7 +853,7 @@
         }
       }
     },
-    "/forgot-password/code/reset": {
+    "/auth/forgot-password/code/reset": {
       "post": {
         "summary": "Reset password with verification code",
         "tags": [

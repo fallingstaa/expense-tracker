@@ -20,7 +20,7 @@ const router = express.Router();
 
 /**
  * @swagger
- * /signup:
+ * /auth/signup:
  *   post:
  *     summary: Register a new user
  *     tags: [Authentication]
@@ -89,7 +89,7 @@ router.post('/signup', async (req, res) => {
 
  /**
  * @swagger
- * /login:
+ * /auth/login:
  *   post:
  *     summary: Login user
  *     tags: [Authentication]
@@ -160,7 +160,7 @@ router.post('/forgot-password', async (req, res) => {
 
 /**
  * @swagger
- * /forgot-password:
+ * /auth/forgot-password:
  *   post:
  *     summary: Request password reset
  *     tags: [Authentication]
@@ -212,7 +212,7 @@ router.post('/forgot-password/code/request', async (req, res) => {
 
 /**
  * @swagger
- * /forgot-password/code/request:
+ * /auth/forgot-password/code/request:
  *   post:
  *     summary: Request password reset code
  *     tags: [Authentication]
@@ -264,7 +264,7 @@ router.post('/forgot-password/code/verify', async (req, res) => {
 
 /**
  * @swagger
- * /forgot-password/code/verify:
+ * /auth/forgot-password/code/verify:
  *   post:
  *     summary: Verify password reset code
  *     tags: [Authentication]
@@ -320,7 +320,7 @@ router.post('/forgot-password/code/reset', async (req, res) => {
 
 /**
  * @swagger
- * /forgot-password/code/reset:
+ * /auth/forgot-password/code/reset:
  *   post:
  *     summary: Reset password with verification code
  *     tags: [Authentication]
