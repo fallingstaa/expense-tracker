@@ -5,6 +5,35 @@
   "outputDirectory": "frontend/dist",
   "routes": [
     {
+      "src": "/api-docs",
+      "status": 308,
+      "headers": {
+        "Location": "/api/docs/"
+      }
+    },
+    {
+      "src": "/api-docs/",
+      "dest": "/api/docs.js"
+    },
+    {
+      "src": "/api-docs/(.*)",
+      "dest": "/api/docs.js"
+    },
+    {
+      "src": "/docs",
+      "status": 308,
+      "headers": {
+        "Location": "/api/docs/"
+      }
+    },
+    {
+      "src": "/docs/",
+      "status": 308,
+      "headers": {
+        "Location": "/api/docs/"
+      }
+    },
+    {
       "src": "/api/docs",
       "dest": "/api/docs.js"
     },
