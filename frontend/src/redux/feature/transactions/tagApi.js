@@ -2,10 +2,10 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 const API_BASE_URL = import.meta.env.VITE_API_URL;
 
-export const transactionsApi = createApi({
-  reducerPath: "transactionsApi",
+export const tagApi = createApi({
+  reducerPath: "tagApi",
   baseQuery: fetchBaseQuery({
-    baseUrl: `${API_BASE_URL}/transactions`,
+    baseUrl: `${API_BASE_URL}/tags`,
     prepareHeaders: (headers, { getState }) => {
       const token = getState()?.auth?.token;
       if (token) {
@@ -14,44 +14,43 @@ export const transactionsApi = createApi({
       return headers;
     },
   }),
-  tagTypes: ["Transactions"],
+  tagTypes: ["Tags"],
   endpoints: (builder) => ({
-    getTransactions: builder.query({
-      query: (params = {}) => ({
+    getTags: builder.query({
+      query: () => ({
         url: "/",
-        params,
       }),
-      providesTags: ["Transactions"],
+      providesTags: ["Tags"],
     }),
-    createTransaction: builder.mutation({
+    createTag: builder.mutation({
       query: (payload) => ({
         url: "/",
         method: "POST",
         body: payload,
       }),
-      invalidatesTags: ["Transactions"],
+      invalidatesTags: ["Tags"],
     }),
-    updateTransaction: builder.mutation({
+    updateTag: builder.mutation({
       query: ({ id, payload }) => ({
         url: `/${id}`,
         method: "PUT",
         body: payload,
       }),
-      invalidatesTags: ["Transactions"],
+      invalidatesTags: ["Tags"],
     }),
-    deleteTransaction: builder.mutation({
+    deleteTag: builder.mutation({
       query: (id) => ({
         url: `/${id}`,
         method: "DELETE",
       }),
-      invalidatesTags: ["Transactions"],
+      invalidatesTags: ["Tags"],
     }),
   }),
 });
 
 export const {
-  useGetTransactionsQuery,
-  useCreateTransactionMutation,
-  useUpdateTransactionMutation,
-  useDeleteTransactionMutation,
-} = transactionsApi;
+  useGetTagsQuery,
+  useCreateTagMutation,
+  useUpdateTagMutation,
+  useDeleteTagMutation,
+} = tagApi;

@@ -2,10 +2,10 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 const API_BASE_URL = import.meta.env.VITE_API_URL;
 
-export const transactionsApi = createApi({
-  reducerPath: "transactionsApi",
+export const categoriesApi = createApi({
+  reducerPath: "categoriesApi",
   baseQuery: fetchBaseQuery({
-    baseUrl: `${API_BASE_URL}/transactions`,
+    baseUrl: `${API_BASE_URL}/categories`,
     prepareHeaders: (headers, { getState }) => {
       const token = getState()?.auth?.token;
       if (token) {
@@ -14,44 +14,43 @@ export const transactionsApi = createApi({
       return headers;
     },
   }),
-  tagTypes: ["Transactions"],
+  tagTypes: ["Categories"],
   endpoints: (builder) => ({
-    getTransactions: builder.query({
-      query: (params = {}) => ({
+    getCategories: builder.query({
+      query: () => ({
         url: "/",
-        params,
       }),
-      providesTags: ["Transactions"],
+      providesTags: ["Categories"],
     }),
-    createTransaction: builder.mutation({
+    createCategory: builder.mutation({
       query: (payload) => ({
         url: "/",
         method: "POST",
         body: payload,
       }),
-      invalidatesTags: ["Transactions"],
+      invalidatesTags: ["Categories"],
     }),
-    updateTransaction: builder.mutation({
+    updateCategory: builder.mutation({
       query: ({ id, payload }) => ({
         url: `/${id}`,
         method: "PUT",
         body: payload,
       }),
-      invalidatesTags: ["Transactions"],
+      invalidatesTags: ["Categories"],
     }),
-    deleteTransaction: builder.mutation({
+    deleteCategory: builder.mutation({
       query: (id) => ({
         url: `/${id}`,
         method: "DELETE",
       }),
-      invalidatesTags: ["Transactions"],
+      invalidatesTags: ["Categories"],
     }),
   }),
 });
 
 export const {
-  useGetTransactionsQuery,
-  useCreateTransactionMutation,
-  useUpdateTransactionMutation,
-  useDeleteTransactionMutation,
-} = transactionsApi;
+  useGetCategoriesQuery,
+  useCreateCategoryMutation,
+  useUpdateCategoryMutation,
+  useDeleteCategoryMutation,
+} = categoriesApi;

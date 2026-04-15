@@ -1,5 +1,6 @@
-import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { useCallback } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import {
   useLoginMutation,
   useRegisterMutation,
@@ -7,13 +8,19 @@ import {
   useRequestResetCodeMutation,
   useVerifyResetCodeMutation,
   useResetPasswordMutation,
-} from '../redux/feature/auth/authAPI';
-import { logout, clearError, initializeAuth } from '../redux/feature/auth/authSlice';
+} from "../redux/feature/auth/authAPI";
+import {
+  logout,
+  clearError,
+  initializeAuth,
+} from "../redux/feature/auth/authSlice";
 
 export const useAuth = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { user, token, isAuthenticated, loading, error } = useSelector((state) => state.auth);
+  const { user, token, isAuthenticated, loading, error } = useSelector(
+    (state) => state.auth,
+  );
 
   const [login] = useLoginMutation();
   const [register] = useRegisterMutation();
@@ -25,7 +32,7 @@ export const useAuth = () => {
   const handleLogin = async (credentials) => {
     try {
       const result = await login(credentials).unwrap();
-      navigate('/dashboard');
+      navigate("/dashboard");
       return result;
     } catch (error) {
       throw error;
@@ -35,7 +42,7 @@ export const useAuth = () => {
   const handleRegister = async (userData) => {
     try {
       const result = await register(userData).unwrap();
-      navigate('/verify-email', { state: { email: userData.email } });
+      navigate("/verify-email", { state: { email: userData.email } });
       return result;
     } catch (error) {
       throw error;
@@ -45,7 +52,7 @@ export const useAuth = () => {
   const handleForgotPassword = async (emailData) => {
     try {
       const result = await requestResetCode(emailData).unwrap();
-      navigate('/reset-password', { state: { email: emailData.email } });
+      navigate("/reset-password", { state: { email: emailData.email } });
       return result;
     } catch (error) {
       throw error;
@@ -73,7 +80,7 @@ export const useAuth = () => {
   const handleResetPassword = async (resetData) => {
     try {
       const result = await resetPassword(resetData).unwrap();
-      navigate('/login');
+      navigate("/login");
       return result;
     } catch (error) {
       throw error;
@@ -82,16 +89,16 @@ export const useAuth = () => {
 
   const handleLogout = () => {
     dispatch(logout());
-    navigate('/login');
+    navigate("/login");
   };
 
   const handleClearError = () => {
     dispatch(clearError());
   };
 
-  const handleInitializeAuth = () => {
+  const handleInitializeAuth = useCallback(() => {
     dispatch(initializeAuth());
-  };
+  }, [dispatch]);
 
   return {
     // State
@@ -111,5 +118,6 @@ export const useAuth = () => {
     logout: handleLogout,
     clearError: handleClearError,
     initializeAuth: handleInitializeAuth,
+    refreshToken: handleInitializeAuth,
   };
 };

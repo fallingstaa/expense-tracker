@@ -4,12 +4,17 @@ import {
   DisclosurePanel,
 } from "@headlessui/react";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
+import { useEffect } from "react";
 import bg1 from "../../../public/expense.png";
-function classNames(...classes) {
-  return classes.filter(Boolean).join(" ");
-}
+import { useAuth } from "../../hooks/useAuth";
 
 export default function Header() {
+  const { logout, refreshToken } = useAuth();
+
+  useEffect(() => {
+    refreshToken();
+  }, [refreshToken]);
+
   return (
     <Disclosure
       as="nav"
@@ -47,20 +52,20 @@ export default function Header() {
             <button
               type="button"
               onClick={() => console.log("Download CSV")}
-              className="rounded-md cursor-pointer bg-mutes/20 px-3 py-1.5 text-sm font-medium text-gray-300 hover:bg-white/10 hover:text-white"
+              className="rounded-md cursor-pointer bg-mutes/5 px-3 py-1.5 text-sm font-medium text-gray-300 hover:bg-white/10 hover:text-white"
             >
               CSV
             </button>
             <button
               type="button"
               onClick={() => console.log("Download JSON")}
-              className="rounded-md cursor-pointer bg-mutes/20 px-3 py-1.5 text-sm font-medium text-gray-300 hover:bg-white/10 hover:text-white"
+              className="rounded-md cursor-pointer bg-mutes/5 px-3 py-1.5 text-sm font-medium text-gray-300 hover:bg-white/10 hover:text-white"
             >
               JSON
             </button>
             <button
               type="button"
-              onClick={() => console.log("Log out")}
+              onClick={logout}
               className="rounded-md cursor-pointer bg-indigo-500 px-3 py-1.5 text-sm font-medium text-white hover:bg-indigo-400"
             >
               Log out
@@ -78,7 +83,11 @@ export default function Header() {
             <button className="rounded-md cursor-pointer bg-white/5 px-3 py-2 text-sm font-medium text-gray-300 hover:bg-white/10 hover:text-white">
               Download JSON
             </button>
-            <button className="rounded-md cursor-pointer bg-indigo-500 px-3 py-2 text-sm font-medium text-white hover:bg-indigo-400">
+            <button
+              type="button"
+              onClick={logout}
+              className="rounded-md cursor-pointer bg-indigo-500 px-3 py-2 text-sm font-medium text-white hover:bg-indigo-400"
+            >
               Log out
             </button>
           </div>

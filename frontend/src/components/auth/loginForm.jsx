@@ -8,15 +8,16 @@ export default function LoginForm() {
   const [formData, setFormData] = useState({
     email: "",
     password: "",
+    rememberMe: false,
   });
   const { login, loading, error, clearError } = useAuth();
   const navigate = useNavigate();
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
+    const { name, value, type, checked } = e.target;
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: type === "checkbox" ? checked : value,
     }));
     if (error) clearError();
   };
@@ -104,10 +105,22 @@ export default function LoginForm() {
           </div>
 
           {error && (
-            <div className="text-red-400 text-sm text-center">
-              {error}
-            </div>
+            <div className="text-red-400 text-sm text-center">{error}</div>
           )}
+
+          <div className="flex items-center gap-2">
+            <input
+              id="rememberMe"
+              name="rememberMe"
+              type="checkbox"
+              checked={Boolean(formData.rememberMe)}
+              onChange={handleChange}
+              className="h-4 w-4 rounded border-mutes/20 bg-mutes/5 text-indigo-500 focus:ring-indigo-500"
+            />
+            <label htmlFor="rememberMe" className="text-sm text-gray-300">
+              Remember me for 7 days
+            </label>
+          </div>
 
           <div>
             <button

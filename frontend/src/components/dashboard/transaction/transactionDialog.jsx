@@ -1,6 +1,7 @@
-import { X, Tag, FileText, RefreshCw, DollarSign } from "lucide-react";
-import { CATEGORIES } from "./transactionUtils";
-
+import { X, Tag, FileText, DollarSign } from "lucide-react";
+import { CategorySelect } from "./categorySelect";
+import { RecurringSection } from "./recurringSection";
+import { TagSelector } from "./tagSelector";
 export const TransactionDialog = ({
   isOpen,
   onClose,
@@ -83,32 +84,18 @@ export const TransactionDialog = ({
             </div>
             <div>
               <label className="text-sm text-mutes mb-2 block">Category</label>
-              <select
+
+              <CategorySelect
                 value={form.category}
-                onChange={(e) => setForm({ ...form, category: e.target.value })}
-                className="w-full bg-gray-800 border border-mutes/20 text-mutes/50 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-mutes/50"
-              >
-                <option value="">Select category</option>
-                {CATEGORIES.map((c) => (
-                  <option key={c}>{c}</option>
-                ))}
-              </select>
+                onChange={(val) => setForm({ ...form, category: val })}
+              />
             </div>
           </div>
 
-          <div>
-            <label className="text-sm text-mutes mb-2 flex items-center gap-2">
-              <Tag className="w-4 h-4" />
-              Tags (comma-separated)
-            </label>
-            <input
-              type="text"
-              value={form.tags}
-              onChange={(e) => setForm({ ...form, tags: e.target.value })}
-              placeholder="e.g., food, restaurant, weekend"
-              className="w-full bg-gray-800 border border-mutes/20 text-mutes placeholder-mutes/30 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-mutes/50"
-            />
-          </div>
+          <TagSelector
+            value={form.tags} // string[] of selected tag names
+            onChange={(tags) => setForm({ ...form, tags })}
+          />
 
           <div>
             <label className="text-sm text-mutes mb-2 flex items-center gap-2">
@@ -124,25 +111,12 @@ export const TransactionDialog = ({
             />
           </div>
 
-          <div className="flex items-center justify-between bg-gray-800 border border-mutes/20 rounded-xl px-4 py-4">
-            <div className="flex items-center gap-3">
-              <RefreshCw className="w-5 h-5 text-mutes" />
-              <div>
-                <p className="text-mutes font-semibold text-sm">
-                  Recurring Transaction
-                </p>
-                <p className="text-mutes/40 text-xs">Set up automatic repeat</p>
-              </div>
-            </div>
-            <button
-              onClick={() => setRecurring(!recurring)}
-              className={`w-12 h-6 rounded-full transition-colors duration-300 relative shrink-0 ${recurring ? "bg-indigo-500" : "bg-gray-600"}`}
-            >
-              <span
-                className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform duration-300 ${recurring ? "translate-x-6" : "translate-x-0"}`}
-              />
-            </button>
-          </div>
+          <RecurringSection
+            form={form}
+            setForm={setForm}
+            recurring={recurring}
+            setRecurring={setRecurring}
+          />
         </div>
 
         <div className="grid grid-cols-2 gap-3 p-4 sm:p-6 pt-0">

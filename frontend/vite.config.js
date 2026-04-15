@@ -7,4 +7,15 @@ export default defineConfig({
   server: {
     allowedHosts: true, // allows any tunnel URL
   },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          react: ["react", "react-dom"],
+          router: ["react-router-dom"],
+          chart: ["recharts"],
+        },
+      },
+    },
+  },
 });

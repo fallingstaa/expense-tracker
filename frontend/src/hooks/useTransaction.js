@@ -7,20 +7,15 @@ import {
   useUpdateTransactionMutation,
 } from "../redux/feature/transactions/transactionsAPI";
 
-export const useTransaction = () => {
+export const useTransaction = (queryParams = {}) => {
   const [isOpen, setIsOpen] = useState(false);
   const [type, setType] = useState("expense");
   const [recurring, setRecurring] = useState(false);
   const [form, setForm] = useState(emptyForm);
   const [editId, setEditId] = useState(null);
 
-  const {
-    data,
-    isLoading,
-    isFetching,
-    error,
-    refetch,
-  } = useGetTransactionsQuery();
+  const { data, isLoading, isFetching, error, refetch } =
+    useGetTransactionsQuery(queryParams);
 
   const [createTransaction, { isLoading: isCreating }] =
     useCreateTransactionMutation();

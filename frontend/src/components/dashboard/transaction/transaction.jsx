@@ -2,7 +2,7 @@ import { useTransaction } from "../../../hooks/useTransaction";
 import { TransactionCard } from "./transactionCard";
 import { TransactionDialog } from "./transactionDialog";
 
-const Transaction = () => {
+const Transaction = ({ queryParams }) => {
   const {
     isOpen,
     type,
@@ -21,7 +21,7 @@ const Transaction = () => {
     isSaving,
     error,
     onClose,
-  } = useTransaction();
+  } = useTransaction(queryParams);
 
   return (
     <section className="pb-5">
@@ -43,17 +43,19 @@ const Transaction = () => {
             {transactions.length === 0 ? (
               isLoading ? (
                 <div className="pt-20 pb-16 text-center">
-                  <h1 className="text-xl text-mutes font-bold">Loading transactions...</h1>
+                  <h1 className="text-xl text-mutes font-bold">
+                    Loading transactions...
+                  </h1>
                 </div>
               ) : (
-              <div className="pt-20 pb-16 text-center">
-                <h1 className="text-xl text-mutes font-bold">
-                  No transactions yet
-                </h1>
-                <p className="text-sm text-mutes/20">
-                  Add your first transaction to get started
-                </p>
-              </div>
+                <div className="pt-20 pb-16 text-center">
+                  <h1 className="text-xl text-mutes font-bold">
+                    No transactions yet
+                  </h1>
+                  <p className="text-sm text-mutes/20">
+                    Add your first transaction to get started
+                  </p>
+                </div>
               )
             ) : (
               <div className="space-y-3">
