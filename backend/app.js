@@ -19,6 +19,27 @@ const __dirname = path.dirname(__filename);
 const swaggerSpecPath = path.join(__dirname, 'docs', 'swaggerSpec.json');
 const swaggerSpec = JSON.parse(readFileSync(swaggerSpecPath, 'utf8'));
 
+function getRuntimeServerUrl(req) {
+  const configuredUrl = String(process.env.SWAGGER_SERVER_URL || '').trim();
+  if (configuredUrl) {
+    return configuredUrl.replace(/\/+$/, '');
+  }
+
+  const forwardedProtoHeader = req.headers['x-forwarded-proto'];
+  const protoFromForwarded = Array.isArray(forwardedProtoHeader)
+    ? forwardedProtoHeader[0]
+    : String(forwardedProtoHeader || '').split(',')[0].trim();
+
+  const protocol = protoFromForwarded || (req.socket?.encrypted ? 'https' : 'http');
+  const host = req.headers['x-forwarded-host'] || req.headers.host;
+
+  if (!host) {
+    return 'http://localhost:5000';
+  }
+
+  return `${protocol}://${host}/api`;
+}
+
 const app = express();
 
 app.use(cors());
@@ -30,6 +51,19 @@ app.use('/categories', categoriesRoutes);
 app.use('/tags', tagsRoutes);
 app.use('/budgets', budgetsRoutes);
 app.use('/recurring', recurringRoutes);
+
+app.get('/swagger.json', (req, res) => {
+  const serverUrl = getRuntimeServerUrl(req);
+  res.json({
+    ...swaggerSpec,
+    servers: [
+      {
+        url: serverUrl,
+        description: 'API server'
+      }
+    ]
+  });
+});
 
 app.use('/public', express.static(path.join(__dirname, 'public')));
 
