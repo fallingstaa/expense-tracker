@@ -342,6 +342,11 @@ export async function login({ email, password, rememberMe = false }) {
   }
 
   let response;
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => {
+    controller.abort();
+  }, authProviderTimeoutMs);
+
   try {
     response = await fetch(endpoint, {
       method: "POST",
@@ -354,13 +359,15 @@ export async function login({ email, password, rememberMe = false }) {
         email: normalizeEmail(email),
         password,
       }),
-      signal: AbortSignal.timeout(authProviderTimeoutMs),
+      signal: controller.signal,
     });
   } catch (error) {
     if (error?.name === "TimeoutError" || error?.name === "AbortError") {
       throw new Error(`Supabase login timed out after ${authProviderTimeoutMs}ms`);
     }
     throw new Error(error.message || "Login request failed");
+  } finally {
+    clearTimeout(timeoutId);
   }
 
   const payload = await response.json().catch(() => null);
