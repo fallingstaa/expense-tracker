@@ -55,12 +55,39 @@ function renderSwaggerHtml(spec) {
     <div id="swagger-ui"></div>
     <script src="https://unpkg.com/swagger-ui-dist@5/swagger-ui-bundle.js"></script>
     <script>
+      const swaggerRequestTimeoutMs = 15000;
+      const originalFetch = window.fetch.bind(window);
+
+      window.fetch = (input, init = {}) => {
+        const controller = typeof AbortController !== 'undefined' ? new AbortController() : null;
+        const timeoutId = setTimeout(() => {
+          if (controller) {
+            controller.abort();
+          }
+        }, swaggerRequestTimeoutMs);
+
+        const nextInit = { ...init };
+        if (controller && !init.signal) {
+          nextInit.signal = controller.signal;
+        }
+
+        return originalFetch(input, nextInit).finally(() => clearTimeout(timeoutId));
+      };
+
       window.ui = SwaggerUIBundle({
         spec: ${specJson},
         dom_id: '#swagger-ui',
-        deepLinking: true,
+        deepLinking: false,
         displayRequestDuration: true,
-        explorer: true
+        explorer: true,
+        requestInterceptor: (request) => {
+          if (/\/auth\/login$/i.test(String(request.url || ''))) {
+            if (request.headers) {
+              delete request.headers.Authorization;
+            }
+          }
+          return request;
+        }
       });
     </script>
   </body>
