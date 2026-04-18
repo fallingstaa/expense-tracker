@@ -5,6 +5,18 @@ import supabase from "../utils/supabaseClient.js";
 
 const resetCodes = new Map();
 const resetCodeTtlMs = 10 * 60 * 1000;
+const authProviderTimeoutMs = Number(process.env.AUTH_PROVIDER_TIMEOUT_MS || 12000);
+
+function withTimeout(promise, timeoutMs, operationName) {
+  return Promise.race([
+    promise,
+    new Promise((_, reject) => {
+      setTimeout(() => {
+        reject(new Error(`${operationName} timed out after ${timeoutMs}ms`));
+      }, timeoutMs);
+    }),
+  ]);
+}
 
 function normalizeEmail(email) {
   return String(email).trim().toLowerCase();
@@ -320,10 +332,14 @@ export async function signup({ email, password, name }) {
 }
 
 export async function login({ email, password, rememberMe = false }) {
-  const { data, error } = await supabase.auth.signInWithPassword({
-    email,
-    password,
-  });
+  const { data, error } = await withTimeout(
+    supabase.auth.signInWithPassword({
+      email,
+      password,
+    }),
+    authProviderTimeoutMs,
+    "Supabase login",
+  );
 
   if (error) {
     throw new Error(error.message);

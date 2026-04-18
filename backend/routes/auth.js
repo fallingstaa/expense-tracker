@@ -140,6 +140,10 @@ router.post('/login', async (req, res) => {
     const result = await login(req.body);
     return res.json(result);
   } catch (error) {
+    if (String(error.message || '').toLowerCase().includes('timed out')) {
+      return res.status(503).json({ message: 'Authentication provider timeout. Please try again.' });
+    }
+
     return res.status(401).json({ message: error.message });
   }
 });
