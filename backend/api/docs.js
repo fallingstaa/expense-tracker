@@ -1,9 +1,13 @@
 import dotenv from 'dotenv';
 import { readFileSync } from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
 dotenv.config();
 
-const swaggerSpecPath = new URL('../docs/swaggerSpec.json', import.meta.url);
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const swaggerSpecPath = path.join(__dirname, '..', 'docs', 'swaggerSpec.json');
 const swaggerSpec = JSON.parse(readFileSync(swaggerSpecPath, 'utf8'));
 
 function renderSwaggerHtml() {
@@ -39,7 +43,7 @@ function renderSwaggerHtml() {
       };
 
       window.ui = SwaggerUIBundle({
-        url: `${window.location.origin}/swagger.json`,
+        url: `${window.location.origin}/api/swagger.json`,
         dom_id: '#swagger-ui',
         deepLinking: false,
         displayRequestDuration: true,
