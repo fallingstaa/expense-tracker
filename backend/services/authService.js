@@ -332,30 +332,57 @@ export async function signup({ email, password, name }) {
 }
 
 export async function login({ email, password, rememberMe = false }) {
-  const { data, error } = await withTimeout(
-    supabase.auth.signInWithPassword({
-      email,
-      password,
-    }),
-    authProviderTimeoutMs,
-    "Supabase login",
-  );
+  const endpoint = `${String(process.env.SUPABASE_URL || "")
+    .trim()
+    .replace(/\/$/, "")}/auth/v1/token?grant_type=password`;
 
-  if (error) {
-    throw new Error(error.message);
+  const anonKey = String(process.env.SUPABASE_KEY || "").trim();
+  if (!endpoint || !anonKey) {
+    throw new Error("Missing SUPABASE_URL or SUPABASE_KEY configuration");
   }
 
-  if (!data.user) {
+  let response;
+  try {
+    response = await fetch(endpoint, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        apikey: anonKey,
+        Authorization: `Bearer ${anonKey}`,
+      },
+      body: JSON.stringify({
+        email: normalizeEmail(email),
+        password,
+      }),
+      signal: AbortSignal.timeout(authProviderTimeoutMs),
+    });
+  } catch (error) {
+    if (error?.name === "TimeoutError" || error?.name === "AbortError") {
+      throw new Error(`Supabase login timed out after ${authProviderTimeoutMs}ms`);
+    }
+    throw new Error(error.message || "Login request failed");
+  }
+
+  const payload = await response.json().catch(() => null);
+
+  if (!response.ok) {
+    const message =
+      payload?.error_description || payload?.msg || payload?.error || "Invalid login credentials";
+    throw new Error(message);
+  }
+
+  const user = payload?.user;
+  if (!user) {
     throw new Error("Invalid login response");
   }
 
   return {
     user: {
-      id: data.user.id,
-      email: data.user.email,
-      name: data.user.user_metadata?.name ?? null,
+      id: user.id,
+      email: user.email,
+      name: user.user_metadata?.name ?? null,
     },
-    token: buildAuthToken(data.user, rememberMe === true),
+    token: buildAuthToken(user, rememberMe === true),
   };
 }
 
