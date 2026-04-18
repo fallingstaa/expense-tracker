@@ -39,7 +39,7 @@ function renderSwaggerHtml() {
       };
 
       window.ui = SwaggerUIBundle({
-        url: '/swagger.json',
+        url: `${window.location.origin}/swagger.json`,
         dom_id: '#swagger-ui',
         deepLinking: false,
         displayRequestDuration: true,

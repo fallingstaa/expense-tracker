@@ -75,7 +75,7 @@ app.get('/tester', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'tester.html'));
 });
 
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, { explorer: true }));
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(null, { explorer: true, swaggerUrl: '/swagger.json' }));
 app.get('/docs', (req, res) => {
   res.redirect('/api-docs/');
 });
