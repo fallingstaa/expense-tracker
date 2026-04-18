@@ -17,6 +17,18 @@ import {
 } from '../validators/authValidator.js';
 
 const router = express.Router();
+const loginRouteTimeoutMs = Number(process.env.LOGIN_ROUTE_TIMEOUT_MS || 15000);
+
+function withRouteTimeout(promise, timeoutMs) {
+  return Promise.race([
+    promise,
+    new Promise((_, reject) => {
+      setTimeout(() => {
+        reject(new Error(`Route timeout after ${timeoutMs}ms`));
+      }, timeoutMs);
+    }),
+  ]);
+}
 
 /**
  * @swagger
@@ -137,10 +149,11 @@ router.post('/login', async (req, res) => {
   }
 
   try {
-    const result = await login(req.body);
+    const result = await withRouteTimeout(login(req.body), loginRouteTimeoutMs);
     return res.json(result);
   } catch (error) {
-    if (String(error.message || '').toLowerCase().includes('timed out')) {
+    const message = String(error.message || '').toLowerCase();
+    if (message.includes('timed out') || message.includes('route timeout')) {
       return res.status(503).json({ message: 'Authentication provider timeout. Please try again.' });
     }
 
